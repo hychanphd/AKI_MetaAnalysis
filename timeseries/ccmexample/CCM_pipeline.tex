@@ -1,0 +1,582 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={Pipeline for implementing climate data into CCM},
+  pdfauthor={Oliver A. Kern and Vasilis Dakos},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Pipeline for implementing climate data into CCM}
+\author{Oliver A. Kern and Vasilis Dakos}
+\date{}
+
+\begin{document}
+\maketitle
+
+\hypertarget{code-is-written-to-run-on-redm-version-1.2.3}{%
+\section{code is written to run on rEDM version
+1.2.3}\label{code-is-written-to-run-on-redm-version-1.2.3}}
+
+\hypertarget{requiredevtools}{%
+\section{require(devtools)}\label{requiredevtools}}
+
+\hypertarget{install_versionredm-version-1.2.3-repos-httpcran.us.r-project.org}{%
+\section{\texorpdfstring{install\_version(``rEDM'', version = ``1.2.3'',
+repos =
+``\url{http://cran.us.r-project.org}'')}{install\_version(``rEDM'', version = ``1.2.3'', repos = ``http://cran.us.r-project.org'')}}\label{install_versionredm-version-1.2.3-repos-httpcran.us.r-project.org}}
+
+\hypertarget{load-datasets-data-should-be-in-two-columns-containing-age-column-1-and-proxy-data-column-2}{%
+\section{Load Datasets, data should be in two columns containing age
+(column 1) and proxy data (column
+2)}\label{load-datasets-data-should-be-in-two-columns-containing-age-column-1-and-proxy-data-column-2}}
+
+\hypertarget{define-variables-and-temporal-resolution-for-ccm}{%
+\section{Define variables and temporal resolution for
+CCM}\label{define-variables-and-temporal-resolution-for-ccm}}
+
+\hypertarget{linear-interpolation-to-equidistant-time-steps-defined-above}{%
+\section{linear interpolation to equidistant time steps defined
+above}\label{linear-interpolation-to-equidistant-time-steps-defined-above}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\# linear interpolation of X}
+\NormalTok{x }\OtherTok{=} \FunctionTok{as.data.frame}\NormalTok{(}\FunctionTok{approx}\NormalTok{(}\AttributeTok{x =} \FunctionTok{unlist}\NormalTok{(X[,}\DecValTok{1}\NormalTok{]), }\AttributeTok{y =} \FunctionTok{unlist}\NormalTok{(X[,}\DecValTok{2}\NormalTok{]), }\AttributeTok{xout =}\NormalTok{ xout, }\AttributeTok{method =} \StringTok{"linear"}\NormalTok{))[,}\DecValTok{2}\NormalTok{] }\CommentTok{\# interpolate X to the resolution set above, then remove time component}
+
+\DocumentationTok{\#\#\# linear interpolation of Y}
+\NormalTok{y }\OtherTok{=} \FunctionTok{as.data.frame}\NormalTok{(}\FunctionTok{approx}\NormalTok{(}\AttributeTok{x =} \FunctionTok{unlist}\NormalTok{(Y[,}\DecValTok{1}\NormalTok{]), }\AttributeTok{y =} \FunctionTok{unlist}\NormalTok{(Y[,}\DecValTok{2}\NormalTok{]), }\AttributeTok{xout =}\NormalTok{ xout, }\AttributeTok{method =} \StringTok{"linear"}\NormalTok{))[,}\DecValTok{2}\NormalTok{] }\CommentTok{\# interpolate Y to the resolution set above, then remove time component}
+
+\CommentTok{\# merge X and Y into a single dataframe}
+\NormalTok{model }\OtherTok{=} \FunctionTok{as.data.frame}\NormalTok{(}\FunctionTok{cbind}\NormalTok{(x, y))}
+\NormalTok{model }\OtherTok{=} \FunctionTok{na.omit}\NormalTok{(model)}
+\FunctionTok{colnames}\NormalTok{(model) }\OtherTok{=} \FunctionTok{c}\NormalTok{(xname, yname)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{basic-statistics}{%
+\section{Basic Statistics}\label{basic-statistics}}
+
+\hypertarget{cross-correlation-and-autocorrelation}{%
+\subsection{Cross-correlation and
+autocorrelation}\label{cross-correlation-and-autocorrelation}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# calculate cross{-}correlation and autocorrelation}
+
+\NormalTok{cor }\OtherTok{=} \FunctionTok{cor}\NormalTok{(model) }\CommentTok{\# cross{-}correlation of X and Y}
+
+\NormalTok{acfx }\OtherTok{=} \FunctionTok{acf}\NormalTok{(model[,}\DecValTok{1}\NormalTok{], }\AttributeTok{lag.max =} \DecValTok{1}\NormalTok{, }\AttributeTok{plot =} \ConstantTok{FALSE}\NormalTok{, }\AttributeTok{na.action =}\NormalTok{ na.pass) }\CommentTok{\# autocorrelation for X}
+\NormalTok{acfy }\OtherTok{=} \FunctionTok{acf}\NormalTok{(model[,}\DecValTok{2}\NormalTok{], }\AttributeTok{lag.max =} \DecValTok{1}\NormalTok{, }\AttributeTok{plot =} \ConstantTok{FALSE}\NormalTok{, }\AttributeTok{na.action =}\NormalTok{ na.pass) }\CommentTok{\# autocorrelation for Y}
+
+\CommentTok{\# Set up matrix with the correlation values}
+\NormalTok{cor[}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{] }\OtherTok{=}\NormalTok{ acfx}\SpecialCharTok{$}\NormalTok{acf[}\DecValTok{2}\NormalTok{]}
+\NormalTok{cor[}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{] }\OtherTok{=}\NormalTok{ acfy}\SpecialCharTok{$}\NormalTok{acf[}\DecValTok{2}\NormalTok{]}
+\NormalTok{cor }\OtherTok{=} \FunctionTok{as.data.frame}\NormalTok{(cor) }
+\FunctionTok{print}\NormalTok{(cor)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{simplex-projection}{%
+\section{Simplex Projection}\label{simplex-projection}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\# Simplex projection for variable X}
+
+\CommentTok{\# Run simplex for X using variable tau (1{-}4)}
+\NormalTok{  simplex\_x }\OtherTok{=} \FunctionTok{as.data.frame}\NormalTok{(}\FunctionTok{cbind}\NormalTok{(}\FunctionTok{seq}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{10}\NormalTok{,}\DecValTok{1}\NormalTok{),}\FunctionTok{matrix}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{10}\NormalTok{,}\DecValTok{4}\NormalTok{)))}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\DecValTok{4}\NormalTok{)\{}
+\NormalTok{ simplex\_x[,i}\SpecialCharTok{+}\DecValTok{1}\NormalTok{] }\OtherTok{=} \FunctionTok{cbind}\NormalTok{(}\FunctionTok{simplex}\NormalTok{(x, }\AttributeTok{lib=}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\FunctionTok{length}\NormalTok{(x)), }\AttributeTok{pred=}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\FunctionTok{length}\NormalTok{(x)), }\AttributeTok{tau =}\NormalTok{ i)}\SpecialCharTok{$}\NormalTok{rho)}
+\NormalTok{\}}
+
+\CommentTok{\# plot simplex results}
+\NormalTok{simplex\_x\_plot }\OtherTok{=} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ simplex\_x) }\SpecialCharTok{+} \FunctionTok{theme\_classic}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{expand =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{)) }\SpecialCharTok{+} \FunctionTok{scale\_x\_continuous}\NormalTok{(}\AttributeTok{expand =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{), }\AttributeTok{breaks =} \FunctionTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{10}\NormalTok{,}\DecValTok{1}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{x =} \StringTok{"Embedding Dimension (E)"}\NormalTok{, }\AttributeTok{y =} \FunctionTok{expression}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Forecast skill "}\NormalTok{,rho)), }\AttributeTok{title =} \FunctionTok{paste}\NormalTok{(}\StringTok{"Forecast skill vs Embedding Dimension for"}\NormalTok{, xname)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ V1, }\AttributeTok{y =}\NormalTok{ V2, }\AttributeTok{color =} \StringTok{"tau = 1"}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ V1, }\AttributeTok{y =}\NormalTok{ V3, }\AttributeTok{color =} \StringTok{"tau = 2"}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ V1, }\AttributeTok{y =}\NormalTok{ V4, }\AttributeTok{color =} \StringTok{"tau = 3"}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ V1, }\AttributeTok{y =}\NormalTok{ V5, }\AttributeTok{color =} \StringTok{"tau = 4"}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.title =} \FunctionTok{element\_blank}\NormalTok{(), }\AttributeTok{legend.position =} \FunctionTok{c}\NormalTok{(}\FloatTok{0.9}\NormalTok{,}\FloatTok{0.15}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{scale\_color\_manual}\NormalTok{(}\AttributeTok{values=}\FunctionTok{c}\NormalTok{(}\StringTok{"black"}\NormalTok{,}\StringTok{\textquotesingle{}red\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}blue\textquotesingle{}}\NormalTok{, }\StringTok{"green"}\NormalTok{))}
+
+\DocumentationTok{\#\#\# Simplex projection for variable Y}
+
+\CommentTok{\# Run simplex for Y using variable tau (1{-}4)}
+\NormalTok{simplex\_y }\OtherTok{=} \FunctionTok{as.data.frame}\NormalTok{(}\FunctionTok{cbind}\NormalTok{(}\FunctionTok{seq}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{10}\NormalTok{,}\DecValTok{1}\NormalTok{),}\FunctionTok{matrix}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{10}\NormalTok{,}\DecValTok{4}\NormalTok{)))}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\DecValTok{4}\NormalTok{)\{}
+\NormalTok{ simplex\_y[,i}\SpecialCharTok{+}\DecValTok{1}\NormalTok{] }\OtherTok{=} \FunctionTok{cbind}\NormalTok{(}\FunctionTok{simplex}\NormalTok{(y, }\AttributeTok{lib=}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\FunctionTok{length}\NormalTok{(y)), }\AttributeTok{pred=}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\FunctionTok{length}\NormalTok{(y)), }\AttributeTok{tau =}\NormalTok{ i)}\SpecialCharTok{$}\NormalTok{rho)}
+\NormalTok{\}}
+
+\CommentTok{\# plot simplex results}
+\NormalTok{simplex\_y\_plot }\OtherTok{=} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ simplex\_y) }\SpecialCharTok{+} \FunctionTok{theme\_classic}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{expand =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{)) }\SpecialCharTok{+} \FunctionTok{scale\_x\_continuous}\NormalTok{(}\AttributeTok{expand =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{), }\AttributeTok{breaks =} \FunctionTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{20}\NormalTok{,}\DecValTok{1}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{x =} \StringTok{"Embedding Dimension (E)"}\NormalTok{, }\AttributeTok{y =} \FunctionTok{expression}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Forecast skill "}\NormalTok{,rho)), }\AttributeTok{title =} \FunctionTok{paste}\NormalTok{(}\StringTok{"Forecast skill vs Embedding Dimension for"}\NormalTok{, yname)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{V1, }\AttributeTok{y =}\NormalTok{ V2, }\AttributeTok{color =} \StringTok{"tau = 1"}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{V1, }\AttributeTok{y =}\NormalTok{ V3, }\AttributeTok{color =} \StringTok{"tau = 2"}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{V1, }\AttributeTok{y =}\NormalTok{ V4, }\AttributeTok{color =} \StringTok{"tau = 3"}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{V1, }\AttributeTok{y =}\NormalTok{ V5, }\AttributeTok{color =} \StringTok{"tau = 4"}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.title =} \FunctionTok{element\_blank}\NormalTok{(), }\AttributeTok{legend.position =} \FunctionTok{c}\NormalTok{(}\FloatTok{0.9}\NormalTok{,}\FloatTok{0.15}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{scale\_color\_manual}\NormalTok{(}\AttributeTok{values=}\FunctionTok{c}\NormalTok{(}\StringTok{"black"}\NormalTok{,}\StringTok{\textquotesingle{}red\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}blue\textquotesingle{}}\NormalTok{, }\StringTok{"green"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# plot results from simplex projection}
+\FunctionTok{grid.arrange}\NormalTok{(simplex\_x\_plot, simplex\_y\_plot, }\AttributeTok{ncol=}\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# extract optimal E and tau for X and Y based on the maximum forecast skill p from the simplex projections}
+\NormalTok{max\_simplex\_x }\OtherTok{=} \FunctionTok{which}\NormalTok{(simplex\_x }\SpecialCharTok{==} \FunctionTok{max}\NormalTok{(simplex\_x[,}\DecValTok{2}\SpecialCharTok{:}\DecValTok{5}\NormalTok{]), }\AttributeTok{arr.ind =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{Ex }\OtherTok{=} \FunctionTok{as.numeric}\NormalTok{(max\_simplex\_x[}\DecValTok{1}\NormalTok{])}
+\NormalTok{taux }\OtherTok{=} \FunctionTok{as.numeric}\NormalTok{(max\_simplex\_x[}\DecValTok{2}\NormalTok{]}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{)}
+
+\NormalTok{max\_simplex\_y }\OtherTok{=} \FunctionTok{which}\NormalTok{(simplex\_y }\SpecialCharTok{==} \FunctionTok{max}\NormalTok{(simplex\_y[,}\DecValTok{2}\SpecialCharTok{:}\DecValTok{5}\NormalTok{]), }\AttributeTok{arr.ind =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{Ey }\OtherTok{=} \FunctionTok{as.numeric}\NormalTok{(max\_simplex\_y[}\DecValTok{1}\NormalTok{])}
+\NormalTok{tauy }\OtherTok{=} \FunctionTok{as.numeric}\NormalTok{(max\_simplex\_y[}\DecValTok{2}\NormalTok{]}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{)}
+
+\DocumentationTok{\#\#\# extract 5 best combinations of E and tau and convert to long format}
+\NormalTok{simplex5\_x }\OtherTok{=} \FunctionTok{cbind}\NormalTok{(simplex\_x, }\FunctionTok{seq}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{10}\NormalTok{,}\DecValTok{1}\NormalTok{))}
+\FunctionTok{names}\NormalTok{(simplex5\_x) }\OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"E"}\NormalTok{, }\StringTok{"1"}\NormalTok{, }\StringTok{"2"}\NormalTok{, }\StringTok{"3"}\NormalTok{, }\StringTok{"4"}\NormalTok{, }\StringTok{"index"}\NormalTok{)}
+\NormalTok{simplex5\_x }\OtherTok{=} \FunctionTok{melt}\NormalTok{(simplex5\_x, }\AttributeTok{id.vars =} \FunctionTok{c}\NormalTok{(}\StringTok{"index"}\NormalTok{))[}\DecValTok{11}\SpecialCharTok{:}\DecValTok{50}\NormalTok{,]}
+\NormalTok{simplex5\_x }\OtherTok{=}\NormalTok{ simplex5\_x[}\FunctionTok{order}\NormalTok{(simplex5\_x}\SpecialCharTok{$}\NormalTok{value, }\AttributeTok{decreasing =}\NormalTok{ T),]}
+\NormalTok{simplex5\_x}\SpecialCharTok{$}\NormalTok{variable }\OtherTok{=} \FunctionTok{as.numeric}\NormalTok{(simplex5\_x}\SpecialCharTok{$}\NormalTok{variable)}
+
+\NormalTok{best5\_simplex\_x }\OtherTok{=}\NormalTok{ simplex5\_x[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{5}\NormalTok{,]}
+\NormalTok{best5\_simplex\_x[,}\DecValTok{2}\NormalTok{] }\OtherTok{=}\NormalTok{ best5\_simplex\_x[,}\DecValTok{2}\NormalTok{]}\SpecialCharTok{{-}}\DecValTok{1}
+\FunctionTok{names}\NormalTok{(best5\_simplex\_x) }\OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"E"}\NormalTok{, }\StringTok{"tau"}\NormalTok{, }\StringTok{"value"}\NormalTok{)}
+
+\DocumentationTok{\#\#\# extract 5 best combinations of E and tau and convert to long format (other direction)}
+\NormalTok{simplex5\_y }\OtherTok{=} \FunctionTok{cbind}\NormalTok{(simplex\_y, }\FunctionTok{seq}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{10}\NormalTok{,}\DecValTok{1}\NormalTok{))}
+\FunctionTok{names}\NormalTok{(simplex5\_y) }\OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"E"}\NormalTok{, }\StringTok{"1"}\NormalTok{, }\StringTok{"2"}\NormalTok{, }\StringTok{"3"}\NormalTok{, }\StringTok{"4"}\NormalTok{, }\StringTok{"index"}\NormalTok{)}
+\NormalTok{simplex5\_y }\OtherTok{=} \FunctionTok{melt}\NormalTok{(simplex5\_y, }\AttributeTok{id.vars =} \FunctionTok{c}\NormalTok{(}\StringTok{"index"}\NormalTok{))[}\DecValTok{11}\SpecialCharTok{:}\DecValTok{50}\NormalTok{,]}
+\NormalTok{simplex5\_y }\OtherTok{=}\NormalTok{ simplex5\_y[}\FunctionTok{order}\NormalTok{(simplex5\_y}\SpecialCharTok{$}\NormalTok{value, }\AttributeTok{decreasing =}\NormalTok{ T),]}
+\NormalTok{simplex5\_y}\SpecialCharTok{$}\NormalTok{variable }\OtherTok{=} \FunctionTok{as.numeric}\NormalTok{(simplex5\_y}\SpecialCharTok{$}\NormalTok{variable)}
+
+\NormalTok{best5\_simplex\_y }\OtherTok{=}\NormalTok{ simplex5\_y[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{5}\NormalTok{,]}
+\NormalTok{best5\_simplex\_y[,}\DecValTok{2}\NormalTok{] }\OtherTok{=}\NormalTok{ best5\_simplex\_y[,}\DecValTok{2}\NormalTok{]}\SpecialCharTok{{-}}\DecValTok{1}
+\FunctionTok{names}\NormalTok{(best5\_simplex\_y) }\OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"E"}\NormalTok{, }\StringTok{"tau"}\NormalTok{, }\StringTok{"value"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{convergent-cross-mapping-of-x-vs-y}{%
+\section{Convergent Cross Mapping of X vs
+Y}\label{convergent-cross-mapping-of-x-vs-y}}
+
+For CCM to be a test of causality, two criteria must be met: 1) The
+cross map prediction skill is statistically significant using the full
+time series as the library. 2) Cross map prediction demonstrates
+convergence (i.e., prediction skill increases with the size of the
+library)
+
+Based on the optimal Emdbedding Dimension (E) found using simplex
+projection, we can apply CCM to test the data pairwise for causality.
+\textbf{We use E corresponding to the best E for the variable that we
+try to predict.}
+
+\texttt{lib\_sizes} specifies the size of the ``library'' subsamples
+that are used, \texttt{num\_samples} specifies the number of samples to
+be used. We still dont know what determines \texttt{lib\_sizes}.
+
+X xmap Y and Y xmap X (\textbf{``A xmap B quantifies the causal effect
+of B on A by predicting B\^{}t from E lagged time-series fragments of
+A\^{}t''})
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Setup CCM parameters}
+\NormalTok{lib }\OtherTok{=} \FunctionTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{100}\NormalTok{,}\DecValTok{10}\NormalTok{) }\CommentTok{\# library\_sizes for CCM}
+\NormalTok{samples }\OtherTok{=} \DecValTok{100} \CommentTok{\# number of samples used in every CCM set}
+\NormalTok{num\_surr }\OtherTok{=} \DecValTok{100} \CommentTok{\# number of surrogate datasets created (10 for testing, \textgreater{}100 for actual runs)}
+
+\CommentTok{\# run CCM for all variables (using best E and tau from simplex)}
+\NormalTok{x\_xmap\_y  }\OtherTok{\textless{}{-}} \FunctionTok{ccm}\NormalTok{(model, }\AttributeTok{E =}\NormalTok{ Ex, }\AttributeTok{tau =}\NormalTok{ taux, }\AttributeTok{lib\_column =} \DecValTok{1}\NormalTok{, }\AttributeTok{target\_column =} \DecValTok{2}\NormalTok{, }\AttributeTok{lib\_sizes =}\NormalTok{ lib, }\AttributeTok{num\_samples =}\NormalTok{ samples, }\AttributeTok{random\_libs =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{replace =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{y\_xmap\_x  }\OtherTok{\textless{}{-}} \FunctionTok{ccm}\NormalTok{(model, }\AttributeTok{E =}\NormalTok{ Ey, }\AttributeTok{tau =}\NormalTok{ tauy, }\AttributeTok{lib\_column =} \DecValTok{2}\NormalTok{, }\AttributeTok{target\_column =} \DecValTok{1}\NormalTok{, }\AttributeTok{lib\_sizes =}\NormalTok{ lib, }\AttributeTok{num\_samples =}\NormalTok{ samples, }\AttributeTok{random\_libs =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{replace =} \ConstantTok{TRUE}\NormalTok{)}
+
+\CommentTok{\# calculate mean CCM skills at every step of lib}
+\NormalTok{x\_xmap\_y\_means  }\OtherTok{\textless{}{-}} \FunctionTok{ccm\_means}\NormalTok{(x\_xmap\_y)}
+\NormalTok{x\_xmap\_y\_means}\SpecialCharTok{$}\NormalTok{group }\OtherTok{=} \FunctionTok{as.factor}\NormalTok{(}\DecValTok{1}\NormalTok{)}
+\NormalTok{y\_xmap\_x\_means  }\OtherTok{\textless{}{-}} \FunctionTok{ccm\_means}\NormalTok{(y\_xmap\_x)}
+\NormalTok{y\_xmap\_x\_means}\SpecialCharTok{$}\NormalTok{group }\OtherTok{=} \FunctionTok{as.factor}\NormalTok{(}\DecValTok{2}\NormalTok{)}
+
+\DocumentationTok{\#\#\# Significance Test}
+\CommentTok{\#The significance test is performed by running CCM against surrogate datasets. The results are displayed as shaded areas in the main CCM plot.}
+
+\CommentTok{\# define method for creating surrogate time series}
+\ControlFlowTok{if}\NormalTok{ (}\FunctionTok{length}\NormalTok{(xout) }\SpecialCharTok{\textless{}} \DecValTok{200}\NormalTok{) \{}
+\NormalTok{method }\OtherTok{=} \StringTok{"random\_shuffle"}
+\NormalTok{\} }\ControlFlowTok{else}\NormalTok{ \{}
+\NormalTok{method }\OtherTok{=} \StringTok{"ebisuzaki"}
+\NormalTok{\}}
+
+\CommentTok{\# create surrogate time series using the "ebisuzaki" or "random\_shuffle" method}
+\NormalTok{x\_surr }\OtherTok{=} \FunctionTok{make\_surrogate\_data}\NormalTok{(model[,}\DecValTok{1}\NormalTok{], }\AttributeTok{method =}\NormalTok{ method, }\AttributeTok{num\_surr =}\NormalTok{ num\_surr)}
+\NormalTok{y\_surr }\OtherTok{=} \FunctionTok{make\_surrogate\_data}\NormalTok{(model[,}\DecValTok{2}\NormalTok{], }\AttributeTok{method =}\NormalTok{ method, }\AttributeTok{num\_surr =}\NormalTok{ num\_surr)}
+
+\CommentTok{\# run CCM for all variables against their surrogate data and add forecasts skills to the CCM plot:}
+
+\DocumentationTok{\#\#\# X xmap Y (surrogate)}
+\NormalTok{x\_xmap\_y\_surr }\OtherTok{=} \FunctionTok{matrix}\NormalTok{(}\DecValTok{0}\NormalTok{, }\AttributeTok{ncol =}\NormalTok{ num\_surr, }\AttributeTok{nrow =} \FunctionTok{length}\NormalTok{(lib))}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{num\_surr)\{x\_xmap\_y\_surr[,i] }\OtherTok{=} \FunctionTok{ccm\_means}\NormalTok{(}\FunctionTok{ccm}\NormalTok{(}\FunctionTok{cbind}\NormalTok{(x, y\_surr[,i]), }\AttributeTok{E=}\NormalTok{Ex, }\AttributeTok{tau =}\NormalTok{ taux, }\AttributeTok{lib\_column =} \DecValTok{1}\NormalTok{, }\AttributeTok{target\_column =} \DecValTok{2}\NormalTok{, }\AttributeTok{lib\_sizes =}\NormalTok{ lib, }\AttributeTok{random\_libs =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{replace =} \ConstantTok{TRUE}\NormalTok{))}\SpecialCharTok{$}\NormalTok{rho\}}
+
+\DocumentationTok{\#\#\# Y xmap X (surrogate)}
+\NormalTok{y\_xmap\_x\_surr }\OtherTok{=} \FunctionTok{matrix}\NormalTok{(}\DecValTok{0}\NormalTok{, }\AttributeTok{ncol =}\NormalTok{ num\_surr, }\AttributeTok{nrow =} \FunctionTok{length}\NormalTok{(lib))}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{num\_surr)\{y\_xmap\_x\_surr[,i] }\OtherTok{=} \FunctionTok{ccm\_means}\NormalTok{(}\FunctionTok{ccm}\NormalTok{(}\FunctionTok{cbind}\NormalTok{(y, x\_surr[,i]), }\AttributeTok{E=}\NormalTok{Ey, }\AttributeTok{tau =}\NormalTok{ tauy, }\AttributeTok{lib\_column =} \DecValTok{1}\NormalTok{, }\AttributeTok{target\_column =} \DecValTok{2}\NormalTok{, }\AttributeTok{lib\_sizes =}\NormalTok{ lib, }\AttributeTok{random\_libs =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{replace =} \ConstantTok{TRUE}\NormalTok{))}\SpecialCharTok{$}\NormalTok{rho\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Calculate 5th to 95th percentiles of the results from the significance test}
+
+\DocumentationTok{\#\#\# X xmap Y}
+\NormalTok{percentile\_x\_xmap\_y }\OtherTok{=} \FunctionTok{apply}\NormalTok{(}\FunctionTok{na.omit}\NormalTok{(x\_xmap\_y\_surr), }\DecValTok{1}\NormalTok{, quantile, }\AttributeTok{probs =} \FunctionTok{c}\NormalTok{(}\FloatTok{0.05}\NormalTok{, }\FloatTok{0.95}\NormalTok{))}
+\NormalTok{percentile\_x\_xmap\_y }\OtherTok{=} \FunctionTok{as.data.frame}\NormalTok{(}\FunctionTok{t}\NormalTok{(}\FunctionTok{rbind}\NormalTok{(lib[}\DecValTok{2}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(lib)], percentile\_x\_xmap\_y)))}
+\NormalTok{percentile\_x\_xmap\_y}\SpecialCharTok{$}\NormalTok{group }\OtherTok{=} \FunctionTok{as.factor}\NormalTok{(}\DecValTok{1}\NormalTok{)}
+
+\DocumentationTok{\#\#\# Y xmap X}
+\NormalTok{percentile\_y\_xmap\_x }\OtherTok{=} \FunctionTok{apply}\NormalTok{(}\FunctionTok{na.omit}\NormalTok{(y\_xmap\_x\_surr), }\DecValTok{1}\NormalTok{, quantile, }\AttributeTok{probs =} \FunctionTok{c}\NormalTok{(}\FloatTok{0.05}\NormalTok{, }\FloatTok{0.95}\NormalTok{))}
+\NormalTok{percentile\_y\_xmap\_x }\OtherTok{=} \FunctionTok{as.data.frame}\NormalTok{(}\FunctionTok{t}\NormalTok{(}\FunctionTok{rbind}\NormalTok{(lib[}\DecValTok{2}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(lib)], percentile\_y\_xmap\_x)))}
+\NormalTok{percentile\_y\_xmap\_x}\SpecialCharTok{$}\NormalTok{group }\OtherTok{=} \FunctionTok{as.factor}\NormalTok{(}\DecValTok{2}\NormalTok{)}
+
+\CommentTok{\# Setup plots from CCM and the significance test}
+\FunctionTok{ggplot}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{theme\_classic}\NormalTok{() }\SpecialCharTok{+} 
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{x =} \StringTok{"Library size (L)"}\NormalTok{, }\AttributeTok{y =} \FunctionTok{expression}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Cross map skill "}\NormalTok{,rho)), }\AttributeTok{title =} \FunctionTok{paste}\NormalTok{(}\StringTok{"Convergent Cross Mapping for"}\NormalTok{ , xname, }\StringTok{"and"}\NormalTok{, yname)) }\SpecialCharTok{+} 
+  \FunctionTok{scale\_x\_continuous}\NormalTok{(}\AttributeTok{breaks =}\NormalTok{ lib, }\AttributeTok{expand =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{), }\AttributeTok{limits =} \FunctionTok{c}\NormalTok{(lib[}\DecValTok{2}\NormalTok{], }\FunctionTok{max}\NormalTok{(lib))) }\SpecialCharTok{+} 
+  \FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{limits =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{), }\AttributeTok{expand =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{)) }\SpecialCharTok{+} 
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.title =} \FunctionTok{element\_blank}\NormalTok{(), }\AttributeTok{legend.position =} \FunctionTok{c}\NormalTok{(}\FloatTok{0.85}\NormalTok{, }\FloatTok{0.95}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{data =}\NormalTok{ x\_xmap\_y\_means, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ x\_xmap\_y\_means}\SpecialCharTok{$}\NormalTok{lib\_size, }\AttributeTok{y =}\NormalTok{ x\_xmap\_y\_means}\SpecialCharTok{$}\NormalTok{rho, }\AttributeTok{color =}\NormalTok{ group)) }\SpecialCharTok{+} \CommentTok{\# X xmap Y data}
+  \FunctionTok{geom\_ribbon}\NormalTok{(}\AttributeTok{data =}\NormalTok{ percentile\_x\_xmap\_y, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ percentile\_x\_xmap\_y}\SpecialCharTok{$}\NormalTok{V1, }\AttributeTok{ymin=}\FunctionTok{pmax}\NormalTok{(}\DecValTok{0}\NormalTok{, percentile\_x\_xmap\_y}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{5\%}\StringTok{\textasciigrave{}}\NormalTok{), }\AttributeTok{ymax =}\NormalTok{ percentile\_x\_xmap\_y}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{95\%}\StringTok{\textasciigrave{}}\NormalTok{, }\AttributeTok{fill=}\NormalTok{group), }\AttributeTok{alpha=}\NormalTok{.}\DecValTok{4}\NormalTok{) }\SpecialCharTok{+} \CommentTok{\# X xmap Y (surrogate) data}
+  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{data =}\NormalTok{ y\_xmap\_x\_means, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ y\_xmap\_x\_means}\SpecialCharTok{$}\NormalTok{lib\_size, }\AttributeTok{y =}\NormalTok{ y\_xmap\_x\_means}\SpecialCharTok{$}\NormalTok{rho, }\AttributeTok{color =}\NormalTok{ group)) }\SpecialCharTok{+} \CommentTok{\# Y xmap X data}
+  \FunctionTok{geom\_ribbon}\NormalTok{(}\AttributeTok{data =}\NormalTok{ percentile\_y\_xmap\_x, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ percentile\_y\_xmap\_x}\SpecialCharTok{$}\NormalTok{V1, }\AttributeTok{ymin=}\FunctionTok{pmax}\NormalTok{(}\DecValTok{0}\NormalTok{, percentile\_y\_xmap\_x}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{5\%}\StringTok{\textasciigrave{}}\NormalTok{), }\AttributeTok{ymax =}\NormalTok{ percentile\_y\_xmap\_x}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{95\%}\StringTok{\textasciigrave{}}\NormalTok{, }\AttributeTok{fill=}\NormalTok{group), }\AttributeTok{alpha=}\NormalTok{.}\DecValTok{4}\NormalTok{) }\SpecialCharTok{+} \CommentTok{\# Y xmap X (surrogate) data}
+  \FunctionTok{geom\_hline}\NormalTok{(}\AttributeTok{data =}\NormalTok{ cor, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{yintercept =} \FunctionTok{abs}\NormalTok{(cor[}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{])), }\AttributeTok{color =} \StringTok{"black"}\NormalTok{, }\AttributeTok{linetype =} \StringTok{"dashed"}\NormalTok{) }\SpecialCharTok{+} \CommentTok{\# linear correlation (see above)}
+  \FunctionTok{scale\_color\_manual}\NormalTok{(}\AttributeTok{values=}\FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}red\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}blue\textquotesingle{}}\NormalTok{), }\AttributeTok{labels =} \FunctionTok{c}\NormalTok{(}\FunctionTok{paste}\NormalTok{(xname, }\StringTok{"xmap"}\NormalTok{ , yname), }\FunctionTok{paste}\NormalTok{(yname, }\StringTok{"xmap"}\NormalTok{ , xname))) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_manual}\NormalTok{(}\AttributeTok{values=}\FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}red\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}blue\textquotesingle{}}\NormalTok{), }\AttributeTok{guide =} \ConstantTok{FALSE}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{annotate}\NormalTok{(}\StringTok{"text"}\NormalTok{, }\AttributeTok{x =} \DecValTok{12}\NormalTok{, }\AttributeTok{y =} \FloatTok{0.95}\NormalTok{, }\AttributeTok{label =} \FunctionTok{paste}\NormalTok{(}\StringTok{"for E ="}\NormalTok{,Ex,}\StringTok{","}\NormalTok{,}\StringTok{"tau ="}\NormalTok{, taux), }\AttributeTok{hjust =} \DecValTok{0}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{annotate}\NormalTok{(}\StringTok{"text"}\NormalTok{, }\AttributeTok{x =} \DecValTok{12}\NormalTok{, }\AttributeTok{y =} \FloatTok{0.90}\NormalTok{, }\AttributeTok{label =} \FunctionTok{paste}\NormalTok{(}\StringTok{"and E ="}\NormalTok{,Ey,}\StringTok{","}\NormalTok{,}\StringTok{"tau ="}\NormalTok{, tauy), }\AttributeTok{hjust =} \DecValTok{0}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{sensitivity-test}{%
+\section{Sensitivity Test}\label{sensitivity-test}}
+
+Running CCM for the 5 combinations of E (1:10) and tau (1:4) that
+yielded the highest forecast skill in the simplex projection. We then
+run the CCM with these parameters for all variables against surrogate
+datasets to test the sensitivity of the method
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{libsize }\OtherTok{=} \FunctionTok{seq}\NormalTok{(}\DecValTok{10}\NormalTok{,}\DecValTok{100}\NormalTok{,}\DecValTok{10}\NormalTok{) }\CommentTok{\# set library size for CCM runs}
+
+\CommentTok{\# setup the sensitivity test for x xmap y using the 5 best combinations of E and tau}
+\NormalTok{x\_sensitivity }\OtherTok{=} \FunctionTok{as.data.frame}\NormalTok{(}\FunctionTok{matrix}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{10}\NormalTok{,}\DecValTok{5}\NormalTok{)) }\CommentTok{\# setup dataframe }
+
+\CommentTok{\# run CCM for all 5 combinations}
+\NormalTok{x\_sensitivity[,}\DecValTok{1}\NormalTok{] }\OtherTok{=} \FunctionTok{ccm\_means}\NormalTok{(}\FunctionTok{ccm}\NormalTok{(model, }\AttributeTok{E=}\NormalTok{best5\_simplex\_x[}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{], }\AttributeTok{tau=}\NormalTok{best5\_simplex\_x[}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{], }\AttributeTok{lib\_column =} \DecValTok{1}\NormalTok{, }\AttributeTok{target\_column =} \DecValTok{2}\NormalTok{, }\AttributeTok{lib\_sizes =}\NormalTok{ libsize))}\SpecialCharTok{$}\NormalTok{rho}
+\NormalTok{x\_sensitivity[,}\DecValTok{2}\NormalTok{] }\OtherTok{=} \FunctionTok{ccm\_means}\NormalTok{(}\FunctionTok{ccm}\NormalTok{(model, }\AttributeTok{E=}\NormalTok{best5\_simplex\_x[}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{], }\AttributeTok{tau=}\NormalTok{best5\_simplex\_x[}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{], }\AttributeTok{lib\_column =} \DecValTok{1}\NormalTok{, }\AttributeTok{target\_column =} \DecValTok{2}\NormalTok{, }\AttributeTok{lib\_sizes =}\NormalTok{ libsize))}\SpecialCharTok{$}\NormalTok{rho}
+\NormalTok{x\_sensitivity[,}\DecValTok{3}\NormalTok{] }\OtherTok{=} \FunctionTok{ccm\_means}\NormalTok{(}\FunctionTok{ccm}\NormalTok{(model, }\AttributeTok{E=}\NormalTok{best5\_simplex\_x[}\DecValTok{3}\NormalTok{,}\DecValTok{1}\NormalTok{], }\AttributeTok{tau=}\NormalTok{best5\_simplex\_x[}\DecValTok{3}\NormalTok{,}\DecValTok{2}\NormalTok{], }\AttributeTok{lib\_column =} \DecValTok{1}\NormalTok{, }\AttributeTok{target\_column =} \DecValTok{2}\NormalTok{, }\AttributeTok{lib\_sizes =}\NormalTok{ libsize))}\SpecialCharTok{$}\NormalTok{rho}
+\NormalTok{x\_sensitivity[,}\DecValTok{4}\NormalTok{] }\OtherTok{=} \FunctionTok{ccm\_means}\NormalTok{(}\FunctionTok{ccm}\NormalTok{(model, }\AttributeTok{E=}\NormalTok{best5\_simplex\_x[}\DecValTok{4}\NormalTok{,}\DecValTok{1}\NormalTok{], }\AttributeTok{tau=}\NormalTok{best5\_simplex\_x[}\DecValTok{4}\NormalTok{,}\DecValTok{2}\NormalTok{], }\AttributeTok{lib\_column =} \DecValTok{1}\NormalTok{, }\AttributeTok{target\_column =} \DecValTok{2}\NormalTok{, }\AttributeTok{lib\_sizes =}\NormalTok{ libsize))}\SpecialCharTok{$}\NormalTok{rho}
+\NormalTok{x\_sensitivity[,}\DecValTok{5}\NormalTok{] }\OtherTok{=} \FunctionTok{ccm\_means}\NormalTok{(}\FunctionTok{ccm}\NormalTok{(model, }\AttributeTok{E=}\NormalTok{best5\_simplex\_x[}\DecValTok{5}\NormalTok{,}\DecValTok{1}\NormalTok{], }\AttributeTok{tau=}\NormalTok{best5\_simplex\_x[}\DecValTok{5}\NormalTok{,}\DecValTok{2}\NormalTok{], }\AttributeTok{lib\_column =} \DecValTok{1}\NormalTok{, }\AttributeTok{target\_column =} \DecValTok{2}\NormalTok{, }\AttributeTok{lib\_sizes =}\NormalTok{ libsize))}\SpecialCharTok{$}\NormalTok{rho}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\DecValTok{5}\NormalTok{)\{}
+  \FunctionTok{colnames}\NormalTok{(x\_sensitivity)[i] }\OtherTok{=} \FunctionTok{paste}\NormalTok{(best5\_simplex\_x[i,}\DecValTok{1}\NormalTok{], best5\_simplex\_x[i,}\DecValTok{2}\NormalTok{])}
+\NormalTok{\}}
+\CommentTok{\# test sensitivity for x xmap surrogate y using the 5 best combinations of E and tau}
+\NormalTok{x\_sensitivity1 }\OtherTok{=} \FunctionTok{matrix}\NormalTok{(}\DecValTok{0}\NormalTok{, }\AttributeTok{ncol =}\NormalTok{ num\_surr, }\AttributeTok{nrow =} \FunctionTok{length}\NormalTok{(libsize))}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{num\_surr)\{x\_sensitivity1[,i] }\OtherTok{=} \FunctionTok{ccm\_means}\NormalTok{(}\FunctionTok{ccm}\NormalTok{(}\FunctionTok{cbind}\NormalTok{(x, y\_surr[,i]), }\AttributeTok{E=}\NormalTok{best5\_simplex\_x[}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{], }\AttributeTok{tau =}\NormalTok{ best5\_simplex\_x[}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{], }\AttributeTok{lib\_column =} \DecValTok{1}\NormalTok{, }\AttributeTok{target\_column =} \DecValTok{2}\NormalTok{, }\AttributeTok{lib\_sizes =}\NormalTok{ libsize, }\AttributeTok{random\_libs =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{replace =} \ConstantTok{TRUE}\NormalTok{))}\SpecialCharTok{$}\NormalTok{rho\}}
+\NormalTok{x\_sensitivity2 }\OtherTok{=} \FunctionTok{matrix}\NormalTok{(}\DecValTok{0}\NormalTok{, }\AttributeTok{ncol =}\NormalTok{ num\_surr, }\AttributeTok{nrow =} \FunctionTok{length}\NormalTok{(libsize))}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{num\_surr)\{x\_sensitivity2[,i] }\OtherTok{=} \FunctionTok{ccm\_means}\NormalTok{(}\FunctionTok{ccm}\NormalTok{(}\FunctionTok{cbind}\NormalTok{(x, y\_surr[,i]), }\AttributeTok{E=}\NormalTok{best5\_simplex\_x[}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{], }\AttributeTok{tau =}\NormalTok{ best5\_simplex\_x[}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{], }\AttributeTok{lib\_column =} \DecValTok{1}\NormalTok{, }\AttributeTok{target\_column =} \DecValTok{2}\NormalTok{, }\AttributeTok{lib\_sizes =}\NormalTok{ libsize, }\AttributeTok{random\_libs =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{replace =} \ConstantTok{TRUE}\NormalTok{))}\SpecialCharTok{$}\NormalTok{rho\}}
+\NormalTok{x\_sensitivity3 }\OtherTok{=} \FunctionTok{matrix}\NormalTok{(}\DecValTok{0}\NormalTok{, }\AttributeTok{ncol =}\NormalTok{ num\_surr, }\AttributeTok{nrow =} \FunctionTok{length}\NormalTok{(libsize))}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{num\_surr)\{x\_sensitivity3[,i] }\OtherTok{=} \FunctionTok{ccm\_means}\NormalTok{(}\FunctionTok{ccm}\NormalTok{(}\FunctionTok{cbind}\NormalTok{(x, y\_surr[,i]), }\AttributeTok{E=}\NormalTok{best5\_simplex\_x[}\DecValTok{3}\NormalTok{,}\DecValTok{1}\NormalTok{], }\AttributeTok{tau =}\NormalTok{ best5\_simplex\_x[}\DecValTok{3}\NormalTok{,}\DecValTok{2}\NormalTok{], }\AttributeTok{lib\_column =} \DecValTok{1}\NormalTok{, }\AttributeTok{target\_column =} \DecValTok{2}\NormalTok{, }\AttributeTok{lib\_sizes =}\NormalTok{ libsize, }\AttributeTok{random\_libs =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{replace =} \ConstantTok{TRUE}\NormalTok{))}\SpecialCharTok{$}\NormalTok{rho\}}
+\NormalTok{x\_sensitivity4 }\OtherTok{=} \FunctionTok{matrix}\NormalTok{(}\DecValTok{0}\NormalTok{, }\AttributeTok{ncol =}\NormalTok{ num\_surr, }\AttributeTok{nrow =} \FunctionTok{length}\NormalTok{(libsize))}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{num\_surr)\{x\_sensitivity4[,i] }\OtherTok{=} \FunctionTok{ccm\_means}\NormalTok{(}\FunctionTok{ccm}\NormalTok{(}\FunctionTok{cbind}\NormalTok{(x, y\_surr[,i]), }\AttributeTok{E=}\NormalTok{best5\_simplex\_x[}\DecValTok{4}\NormalTok{,}\DecValTok{1}\NormalTok{], }\AttributeTok{tau =}\NormalTok{ best5\_simplex\_x[}\DecValTok{4}\NormalTok{,}\DecValTok{2}\NormalTok{], }\AttributeTok{lib\_column =} \DecValTok{1}\NormalTok{, }\AttributeTok{target\_column =} \DecValTok{2}\NormalTok{, }\AttributeTok{lib\_sizes =}\NormalTok{ libsize, }\AttributeTok{random\_libs =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{replace =} \ConstantTok{TRUE}\NormalTok{))}\SpecialCharTok{$}\NormalTok{rho\}}
+\NormalTok{x\_sensitivity5 }\OtherTok{=} \FunctionTok{matrix}\NormalTok{(}\DecValTok{0}\NormalTok{, }\AttributeTok{ncol =}\NormalTok{ num\_surr, }\AttributeTok{nrow =} \FunctionTok{length}\NormalTok{(libsize))}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{num\_surr)\{x\_sensitivity5[,i] }\OtherTok{=} \FunctionTok{ccm\_means}\NormalTok{(}\FunctionTok{ccm}\NormalTok{(}\FunctionTok{cbind}\NormalTok{(x, y\_surr[,i]), }\AttributeTok{E=}\NormalTok{best5\_simplex\_x[}\DecValTok{5}\NormalTok{,}\DecValTok{1}\NormalTok{], }\AttributeTok{tau =}\NormalTok{ best5\_simplex\_x[}\DecValTok{5}\NormalTok{,}\DecValTok{2}\NormalTok{], }\AttributeTok{lib\_column =} \DecValTok{1}\NormalTok{, }\AttributeTok{target\_column =} \DecValTok{2}\NormalTok{, }\AttributeTok{lib\_sizes =}\NormalTok{ libsize, }\AttributeTok{random\_libs =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{replace =} \ConstantTok{TRUE}\NormalTok{))}\SpecialCharTok{$}\NormalTok{rho\}}
+
+\CommentTok{\# setup the sensitivity test for y xmap x using the 5 best combinations of E and tau}
+\NormalTok{y\_sensitivity }\OtherTok{=} \FunctionTok{as.data.frame}\NormalTok{(}\FunctionTok{matrix}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{10}\NormalTok{,}\DecValTok{5}\NormalTok{)) }\CommentTok{\#setup dataframe}
+
+\CommentTok{\# run CCM for all 5 combinations}
+\NormalTok{y\_sensitivity[,}\DecValTok{1}\NormalTok{] }\OtherTok{=} \FunctionTok{ccm\_means}\NormalTok{(}\FunctionTok{ccm}\NormalTok{(model, }\AttributeTok{E=}\NormalTok{best5\_simplex\_y[}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{], }\AttributeTok{tau=}\NormalTok{best5\_simplex\_y[}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{], }\AttributeTok{lib\_column =} \DecValTok{2}\NormalTok{, }\AttributeTok{target\_column =} \DecValTok{1}\NormalTok{, }\AttributeTok{lib\_sizes =}\NormalTok{ libsize))}\SpecialCharTok{$}\NormalTok{rho}
+\NormalTok{y\_sensitivity[,}\DecValTok{2}\NormalTok{] }\OtherTok{=} \FunctionTok{ccm\_means}\NormalTok{(}\FunctionTok{ccm}\NormalTok{(model, }\AttributeTok{E=}\NormalTok{best5\_simplex\_y[}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{], }\AttributeTok{tau=}\NormalTok{best5\_simplex\_y[}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{], }\AttributeTok{lib\_column =} \DecValTok{2}\NormalTok{, }\AttributeTok{target\_column =} \DecValTok{1}\NormalTok{, }\AttributeTok{lib\_sizes =}\NormalTok{ libsize))}\SpecialCharTok{$}\NormalTok{rho}
+\NormalTok{y\_sensitivity[,}\DecValTok{3}\NormalTok{] }\OtherTok{=} \FunctionTok{ccm\_means}\NormalTok{(}\FunctionTok{ccm}\NormalTok{(model, }\AttributeTok{E=}\NormalTok{best5\_simplex\_y[}\DecValTok{3}\NormalTok{,}\DecValTok{1}\NormalTok{], }\AttributeTok{tau=}\NormalTok{best5\_simplex\_y[}\DecValTok{3}\NormalTok{,}\DecValTok{2}\NormalTok{], }\AttributeTok{lib\_column =} \DecValTok{2}\NormalTok{, }\AttributeTok{target\_column =} \DecValTok{1}\NormalTok{, }\AttributeTok{lib\_sizes =}\NormalTok{ libsize))}\SpecialCharTok{$}\NormalTok{rho}
+\NormalTok{y\_sensitivity[,}\DecValTok{4}\NormalTok{] }\OtherTok{=} \FunctionTok{ccm\_means}\NormalTok{(}\FunctionTok{ccm}\NormalTok{(model, }\AttributeTok{E=}\NormalTok{best5\_simplex\_y[}\DecValTok{4}\NormalTok{,}\DecValTok{1}\NormalTok{], }\AttributeTok{tau=}\NormalTok{best5\_simplex\_y[}\DecValTok{4}\NormalTok{,}\DecValTok{2}\NormalTok{], }\AttributeTok{lib\_column =} \DecValTok{2}\NormalTok{, }\AttributeTok{target\_column =} \DecValTok{1}\NormalTok{, }\AttributeTok{lib\_sizes =}\NormalTok{ libsize))}\SpecialCharTok{$}\NormalTok{rho}
+\NormalTok{y\_sensitivity[,}\DecValTok{5}\NormalTok{] }\OtherTok{=} \FunctionTok{ccm\_means}\NormalTok{(}\FunctionTok{ccm}\NormalTok{(model, }\AttributeTok{E=}\NormalTok{best5\_simplex\_y[}\DecValTok{5}\NormalTok{,}\DecValTok{1}\NormalTok{], }\AttributeTok{tau=}\NormalTok{best5\_simplex\_y[}\DecValTok{5}\NormalTok{,}\DecValTok{2}\NormalTok{], }\AttributeTok{lib\_column =} \DecValTok{2}\NormalTok{, }\AttributeTok{target\_column =} \DecValTok{1}\NormalTok{, }\AttributeTok{lib\_sizes =}\NormalTok{ libsize))}\SpecialCharTok{$}\NormalTok{rho}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\DecValTok{5}\NormalTok{)\{}
+  \FunctionTok{colnames}\NormalTok{(y\_sensitivity)[i] }\OtherTok{=} \FunctionTok{paste}\NormalTok{(best5\_simplex\_y[i,}\DecValTok{1}\NormalTok{], best5\_simplex\_y[i,}\DecValTok{2}\NormalTok{])}
+\NormalTok{\}}
+
+\CommentTok{\# test sensitivity for y xmap surrogate x using the 5 best combinations of E and tau}
+\NormalTok{y\_sensitivity1 }\OtherTok{=} \FunctionTok{matrix}\NormalTok{(}\DecValTok{0}\NormalTok{, }\AttributeTok{ncol =}\NormalTok{ num\_surr, }\AttributeTok{nrow =} \FunctionTok{length}\NormalTok{(libsize))}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{num\_surr)\{y\_sensitivity1[,i] }\OtherTok{=} \FunctionTok{ccm\_means}\NormalTok{(}\FunctionTok{ccm}\NormalTok{(}\FunctionTok{cbind}\NormalTok{(y, x\_surr[,i]), }\AttributeTok{E=}\NormalTok{best5\_simplex\_y[}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{], }\AttributeTok{tau =}\NormalTok{ , }\AttributeTok{lib\_column =} \DecValTok{1}\NormalTok{, }\AttributeTok{target\_column =} \DecValTok{2}\NormalTok{, }\AttributeTok{lib\_sizes =}\NormalTok{ libsize, }\AttributeTok{random\_libs =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{replace =} \ConstantTok{TRUE}\NormalTok{))}\SpecialCharTok{$}\NormalTok{rho\}}
+\NormalTok{y\_sensitivity2 }\OtherTok{=} \FunctionTok{matrix}\NormalTok{(}\DecValTok{0}\NormalTok{, }\AttributeTok{ncol =}\NormalTok{ num\_surr, }\AttributeTok{nrow =} \FunctionTok{length}\NormalTok{(libsize))}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{num\_surr)\{y\_sensitivity2[,i] }\OtherTok{=} \FunctionTok{ccm\_means}\NormalTok{(}\FunctionTok{ccm}\NormalTok{(}\FunctionTok{cbind}\NormalTok{(y, x\_surr[,i]), }\AttributeTok{E=}\NormalTok{best5\_simplex\_y[}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{], }\AttributeTok{tau =}\NormalTok{ best5\_simplex\_y[}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{], }\AttributeTok{lib\_column =} \DecValTok{1}\NormalTok{, }\AttributeTok{target\_column =} \DecValTok{2}\NormalTok{, }\AttributeTok{lib\_sizes =}\NormalTok{ libsize, }\AttributeTok{random\_libs =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{replace =} \ConstantTok{TRUE}\NormalTok{))}\SpecialCharTok{$}\NormalTok{rho\}}
+\NormalTok{y\_sensitivity3 }\OtherTok{=} \FunctionTok{matrix}\NormalTok{(}\DecValTok{0}\NormalTok{, }\AttributeTok{ncol =}\NormalTok{ num\_surr, }\AttributeTok{nrow =} \FunctionTok{length}\NormalTok{(libsize))}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{num\_surr)\{y\_sensitivity3[,i] }\OtherTok{=} \FunctionTok{ccm\_means}\NormalTok{(}\FunctionTok{ccm}\NormalTok{(}\FunctionTok{cbind}\NormalTok{(y, x\_surr[,i]), }\AttributeTok{E=}\NormalTok{best5\_simplex\_y[}\DecValTok{3}\NormalTok{,}\DecValTok{1}\NormalTok{], }\AttributeTok{tau =}\NormalTok{ best5\_simplex\_y[}\DecValTok{3}\NormalTok{,}\DecValTok{2}\NormalTok{], }\AttributeTok{lib\_column =} \DecValTok{1}\NormalTok{, }\AttributeTok{target\_column =} \DecValTok{2}\NormalTok{, }\AttributeTok{lib\_sizes =}\NormalTok{ libsize, }\AttributeTok{random\_libs =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{replace =} \ConstantTok{TRUE}\NormalTok{))}\SpecialCharTok{$}\NormalTok{rho\}}
+\NormalTok{y\_sensitivity4 }\OtherTok{=} \FunctionTok{matrix}\NormalTok{(}\DecValTok{0}\NormalTok{, }\AttributeTok{ncol =}\NormalTok{ num\_surr, }\AttributeTok{nrow =} \FunctionTok{length}\NormalTok{(libsize))}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{num\_surr)\{y\_sensitivity4[,i] }\OtherTok{=} \FunctionTok{ccm\_means}\NormalTok{(}\FunctionTok{ccm}\NormalTok{(}\FunctionTok{cbind}\NormalTok{(y, x\_surr[,i]), }\AttributeTok{E=}\NormalTok{best5\_simplex\_y[}\DecValTok{4}\NormalTok{,}\DecValTok{1}\NormalTok{], }\AttributeTok{tau =}\NormalTok{ best5\_simplex\_y[}\DecValTok{4}\NormalTok{,}\DecValTok{2}\NormalTok{], }\AttributeTok{lib\_column =} \DecValTok{1}\NormalTok{, }\AttributeTok{target\_column =} \DecValTok{2}\NormalTok{, }\AttributeTok{lib\_sizes =}\NormalTok{ libsize, }\AttributeTok{random\_libs =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{replace =} \ConstantTok{TRUE}\NormalTok{))}\SpecialCharTok{$}\NormalTok{rho\}}
+\NormalTok{y\_sensitivity5 }\OtherTok{=} \FunctionTok{matrix}\NormalTok{(}\DecValTok{0}\NormalTok{, }\AttributeTok{ncol =}\NormalTok{ num\_surr, }\AttributeTok{nrow =} \FunctionTok{length}\NormalTok{(libsize))}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{num\_surr)\{y\_sensitivity5[,i] }\OtherTok{=} \FunctionTok{ccm\_means}\NormalTok{(}\FunctionTok{ccm}\NormalTok{(}\FunctionTok{cbind}\NormalTok{(y, x\_surr[,i]), }\AttributeTok{E=}\NormalTok{best5\_simplex\_y[}\DecValTok{5}\NormalTok{,}\DecValTok{1}\NormalTok{], }\AttributeTok{tau =}\NormalTok{ best5\_simplex\_y[}\DecValTok{5}\NormalTok{,}\DecValTok{2}\NormalTok{], }\AttributeTok{lib\_column =} \DecValTok{1}\NormalTok{, }\AttributeTok{target\_column =} \DecValTok{2}\NormalTok{, }\AttributeTok{lib\_sizes =}\NormalTok{ libsize, }\AttributeTok{random\_libs =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{replace =} \ConstantTok{TRUE}\NormalTok{))}\SpecialCharTok{$}\NormalTok{rho\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# print results from the sensitivity test as boxplots showing both the data and surrogate data}
+\NormalTok{x\_sensitivity\_surr }\OtherTok{=} \FunctionTok{as.data.frame}\NormalTok{(}\FunctionTok{t}\NormalTok{(}\FunctionTok{cbind}\NormalTok{(x\_sensitivity1, x\_sensitivity2, x\_sensitivity3, x\_sensitivity4, x\_sensitivity5)))}
+\NormalTok{x\_sensitivity\_surr2 }\OtherTok{=}\NormalTok{ x\_sensitivity\_surr[x\_sensitivity\_surr}\SpecialCharTok{$}\NormalTok{V10 }\SpecialCharTok{\textless{}} \FunctionTok{quantile}\NormalTok{(x\_sensitivity\_surr}\SpecialCharTok{$}\NormalTok{V10, }\FloatTok{0.95}\NormalTok{) }\SpecialCharTok{\&}\NormalTok{ x\_sensitivity\_surr}\SpecialCharTok{$}\NormalTok{V10 }\SpecialCharTok{\textgreater{}} \FunctionTok{quantile}\NormalTok{(x\_sensitivity\_surr}\SpecialCharTok{$}\NormalTok{V10, }\FloatTok{0.05}\NormalTok{), ]}
+\NormalTok{x\_sensitivity\_t }\OtherTok{=} \FunctionTok{as.data.frame}\NormalTok{(}\FunctionTok{t}\NormalTok{(x\_sensitivity))}
+
+\NormalTok{y\_sensitivity\_surr }\OtherTok{=} \FunctionTok{as.data.frame}\NormalTok{(}\FunctionTok{t}\NormalTok{(}\FunctionTok{cbind}\NormalTok{(y\_sensitivity1, y\_sensitivity2, y\_sensitivity3, y\_sensitivity4, y\_sensitivity5)))}
+\NormalTok{y\_sensitivity\_surr2 }\OtherTok{=}\NormalTok{ y\_sensitivity\_surr[y\_sensitivity\_surr}\SpecialCharTok{$}\NormalTok{V10 }\SpecialCharTok{\textless{}} \FunctionTok{quantile}\NormalTok{(y\_sensitivity\_surr}\SpecialCharTok{$}\NormalTok{V10, }\FloatTok{0.95}\NormalTok{) }\SpecialCharTok{\&}\NormalTok{ y\_sensitivity\_surr}\SpecialCharTok{$}\NormalTok{V10 }\SpecialCharTok{\textgreater{}} \FunctionTok{quantile}\NormalTok{(y\_sensitivity\_surr}\SpecialCharTok{$}\NormalTok{V10, }\FloatTok{0.05}\NormalTok{), ]}
+
+\NormalTok{y\_sensitivity\_t }\OtherTok{=} \FunctionTok{as.data.frame}\NormalTok{(}\FunctionTok{t}\NormalTok{(y\_sensitivity))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\# ROC/AUC for calculations variable X}
+\NormalTok{Xdat }\OtherTok{=} \FunctionTok{data.frame}\NormalTok{(}\FunctionTok{cbind}\NormalTok{(}\FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{c}\NormalTok{(x\_sensitivity\_t[,}\DecValTok{10}\NormalTok{] , x\_sensitivity\_surr2[,}\DecValTok{10}\NormalTok{])), }\FunctionTok{c}\NormalTok{(}\FunctionTok{rep}\NormalTok{(}\DecValTok{1}\NormalTok{, }\AttributeTok{times =} \FunctionTok{length}\NormalTok{(x\_sensitivity\_t[,}\DecValTok{10}\NormalTok{])), }\FunctionTok{rep}\NormalTok{(}\DecValTok{0}\NormalTok{, }\AttributeTok{times =} \FunctionTok{length}\NormalTok{(x\_sensitivity\_surr2[,}\DecValTok{10}\NormalTok{])))))}
+
+\FunctionTok{library}\NormalTok{(ROCR)}
+\NormalTok{predX }\OtherTok{\textless{}{-}} \FunctionTok{prediction}\NormalTok{(Xdat}\SpecialCharTok{$}\NormalTok{X1, Xdat}\SpecialCharTok{$}\NormalTok{X2)}
+
+\NormalTok{roc.perfX }\OtherTok{=} \FunctionTok{performance}\NormalTok{(predX, }\AttributeTok{measure =} \StringTok{"tpr"}\NormalTok{, }\AttributeTok{x.measure =} \StringTok{"fpr"}\NormalTok{)}
+
+\NormalTok{auc.perfX }\OtherTok{=} \FunctionTok{performance}\NormalTok{(predX, }\AttributeTok{measure =} \StringTok{"auc"}\NormalTok{)}
+\NormalTok{auc.perfX}\SpecialCharTok{@}\NormalTok{y.values}
+
+
+\DocumentationTok{\#\#\# ROC/AUC calculations for variable Y}
+\NormalTok{Ydat }\OtherTok{=} \FunctionTok{data.frame}\NormalTok{(}\FunctionTok{cbind}\NormalTok{(}\FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{c}\NormalTok{(y\_sensitivity\_t[,}\DecValTok{10}\NormalTok{] , y\_sensitivity\_surr2[,}\DecValTok{10}\NormalTok{])), }\FunctionTok{c}\NormalTok{(}\FunctionTok{rep}\NormalTok{(}\DecValTok{1}\NormalTok{, }\AttributeTok{times =} \FunctionTok{length}\NormalTok{(y\_sensitivity\_t[,}\DecValTok{10}\NormalTok{])), }\FunctionTok{rep}\NormalTok{(}\DecValTok{0}\NormalTok{, }\AttributeTok{times =} \FunctionTok{length}\NormalTok{(y\_sensitivity\_surr2[,}\DecValTok{10}\NormalTok{])))))}
+
+\FunctionTok{library}\NormalTok{(ROCR)}
+\NormalTok{predY }\OtherTok{\textless{}{-}} \FunctionTok{prediction}\NormalTok{(Ydat}\SpecialCharTok{$}\NormalTok{X1, Xdat}\SpecialCharTok{$}\NormalTok{X2)}
+
+\NormalTok{roc.perfY }\OtherTok{=} \FunctionTok{performance}\NormalTok{(predY, }\AttributeTok{measure =} \StringTok{"tpr"}\NormalTok{, }\AttributeTok{x.measure =} \StringTok{"fpr"}\NormalTok{)}
+
+\NormalTok{auc.perfY }\OtherTok{=} \FunctionTok{performance}\NormalTok{(predY, }\AttributeTok{measure =} \StringTok{"auc"}\NormalTok{)}
+\NormalTok{auc.perfY}\SpecialCharTok{@}\NormalTok{y.values}
+
+\DocumentationTok{\#\#\# Plot results}
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow=}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(roc.perfX, }\AttributeTok{main=} \FunctionTok{paste}\NormalTok{(xname , }\StringTok{"xmap"}\NormalTok{, yname))}
+\FunctionTok{text}\NormalTok{(}\AttributeTok{x =} \FloatTok{0.9}\NormalTok{, }\DecValTok{0}\NormalTok{, }\FunctionTok{paste}\NormalTok{(}\StringTok{"AUC ="}\NormalTok{, }\FunctionTok{round}\NormalTok{(}\FunctionTok{as.numeric}\NormalTok{(auc.perfX}\SpecialCharTok{@}\NormalTok{y.values), }\AttributeTok{digits =} \DecValTok{3}\NormalTok{)))}
+\FunctionTok{abline}\NormalTok{(}\AttributeTok{a=}\DecValTok{0}\NormalTok{, }\AttributeTok{b=} \DecValTok{1}\NormalTok{)}
+\FunctionTok{plot}\NormalTok{(roc.perfY, }\AttributeTok{main=} \FunctionTok{paste}\NormalTok{(yname , }\StringTok{"xmap"}\NormalTok{, xname))}
+\FunctionTok{text}\NormalTok{(}\AttributeTok{x =} \FloatTok{0.9}\NormalTok{, }\DecValTok{0}\NormalTok{, }\FunctionTok{paste}\NormalTok{(}\StringTok{"AUC ="}\NormalTok{, }\FunctionTok{round}\NormalTok{(}\FunctionTok{as.numeric}\NormalTok{(auc.perfY}\SpecialCharTok{@}\NormalTok{y.values), }\AttributeTok{digits =} \DecValTok{3}\NormalTok{)))}
+\FunctionTok{abline}\NormalTok{(}\AttributeTok{a=}\DecValTok{0}\NormalTok{, }\AttributeTok{b=} \DecValTok{1}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{causality-test-with-time-delayed-ccm}{%
+\section{Causality test with time-delayed
+CCM}\label{causality-test-with-time-delayed-ccm}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lag }\OtherTok{=} \FunctionTok{seq}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{10}\NormalTok{,}\DecValTok{10}\NormalTok{,}\DecValTok{1}\NormalTok{) }\CommentTok{\# define range of time{-}delay}
+\NormalTok{vars }\OtherTok{\textless{}{-}} \FunctionTok{names}\NormalTok{(model)[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{2}\NormalTok{] }
+
+\CommentTok{\# generate all combinations of lib\_column, target\_column, tp}
+\NormalTok{params }\OtherTok{\textless{}{-}} \FunctionTok{expand.grid}\NormalTok{(}\AttributeTok{lib\_column =}\NormalTok{ vars, }
+                      \AttributeTok{target\_column =}\NormalTok{ vars, }
+                      \AttributeTok{tp =}\NormalTok{ lag)}
+\NormalTok{lagE }\OtherTok{=}  \FunctionTok{rep}\NormalTok{(}\FunctionTok{c}\NormalTok{(Ey,Ex), }\FunctionTok{length}\NormalTok{(lag))}
+\NormalTok{lagtau }\OtherTok{=} \FunctionTok{rep}\NormalTok{(}\FunctionTok{c}\NormalTok{(tauy,taux), }\FunctionTok{length}\NormalTok{(lag))}
+
+\CommentTok{\# throw out cases where lib == target}
+\NormalTok{params }\OtherTok{\textless{}{-}}\NormalTok{ params[params}\SpecialCharTok{$}\NormalTok{lib\_column }\SpecialCharTok{!=}\NormalTok{ params}\SpecialCharTok{$}\NormalTok{target\_column, ]}
+
+\CommentTok{\# add optimal E and tau}
+\NormalTok{params }\OtherTok{=} \FunctionTok{cbind}\NormalTok{(params, lagE, lagtau)}
+
+\CommentTok{\# run CCM}
+\NormalTok{xylag }\OtherTok{=}\NormalTok{ model[,}\DecValTok{1}\SpecialCharTok{:}\DecValTok{2}\NormalTok{]}
+\NormalTok{ccm\_xy }\OtherTok{\textless{}{-}} \FunctionTok{do.call}\NormalTok{(rbind, }\FunctionTok{lapply}\NormalTok{(}\FunctionTok{seq\_len}\NormalTok{(}\FunctionTok{NROW}\NormalTok{(params)), }\ControlFlowTok{function}\NormalTok{(i) \{}
+    \FunctionTok{ccm}\NormalTok{(xylag, }\AttributeTok{E =}\NormalTok{ params}\SpecialCharTok{$}\NormalTok{lagE[i], }\AttributeTok{tau =}\NormalTok{ params}\SpecialCharTok{$}\NormalTok{lagtau[i],  }
+        \AttributeTok{lib\_sizes =} \DecValTok{100}\NormalTok{, }\AttributeTok{random\_libs =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{replace =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{num\_samples =} \DecValTok{100}\NormalTok{,}
+        \AttributeTok{lib\_column =}\NormalTok{ params}\SpecialCharTok{$}\NormalTok{lib\_column[i], }
+        \AttributeTok{target\_column =}\NormalTok{ params}\SpecialCharTok{$}\NormalTok{target\_column[i], }
+        \AttributeTok{tp =}\NormalTok{ params}\SpecialCharTok{$}\NormalTok{tp[i], }\AttributeTok{silent =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{\}))}
+
+\CommentTok{\# Calculate means and standard deviation}
+\CommentTok{\# X xmap Y}
+\NormalTok{lag\_ccm1 }\OtherTok{=} \FunctionTok{matrix}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{100}\NormalTok{,}\DecValTok{21}\NormalTok{)}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\DecValTok{21}\NormalTok{)\{}
+\NormalTok{  lag\_ccm1[,i] }\OtherTok{=}\NormalTok{ ccm\_xy[(ccm\_xy}\SpecialCharTok{$}\NormalTok{tp }\SpecialCharTok{==}\NormalTok{ i}\DecValTok{{-}11}\NormalTok{) }\SpecialCharTok{\&}\NormalTok{ (ccm\_xy}\SpecialCharTok{$}\NormalTok{lib\_column }\SpecialCharTok{==}\NormalTok{ xname),]}\SpecialCharTok{$}\NormalTok{rho}
+\NormalTok{\}}
+\NormalTok{lag\_ccm1 }\OtherTok{=} \FunctionTok{as.data.frame}\NormalTok{(}\FunctionTok{t}\NormalTok{(}\FunctionTok{rbind}\NormalTok{(lag, }\FunctionTok{colMeans}\NormalTok{(lag\_ccm1), }\FunctionTok{colSds}\NormalTok{(lag\_ccm1)))) }\CommentTok{\# build data frame with lag, mean and sd for all lags}
+\FunctionTok{colnames}\NormalTok{(lag\_ccm1) }\OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"lag"}\NormalTok{, }\StringTok{"mean"}\NormalTok{, }\StringTok{"sd"}\NormalTok{)}
+
+\CommentTok{\# Y xmap X}
+\NormalTok{lag\_ccm2 }\OtherTok{=} \FunctionTok{matrix}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{100}\NormalTok{,}\DecValTok{21}\NormalTok{)}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\DecValTok{21}\NormalTok{)\{}
+\NormalTok{  lag\_ccm2[,i] }\OtherTok{=}\NormalTok{ ccm\_xy[(ccm\_xy}\SpecialCharTok{$}\NormalTok{tp }\SpecialCharTok{==}\NormalTok{ i}\DecValTok{{-}11}\NormalTok{) }\SpecialCharTok{\&}\NormalTok{ (ccm\_xy}\SpecialCharTok{$}\NormalTok{lib\_column }\SpecialCharTok{==}\NormalTok{ yname),]}\SpecialCharTok{$}\NormalTok{rho}
+\NormalTok{\}}
+\NormalTok{lag\_ccm2 }\OtherTok{=} \FunctionTok{as.data.frame}\NormalTok{(}\FunctionTok{t}\NormalTok{(}\FunctionTok{rbind}\NormalTok{(lag, }\FunctionTok{colMeans}\NormalTok{(lag\_ccm2), }\FunctionTok{colSds}\NormalTok{(lag\_ccm2)))) }\CommentTok{\# build data frame with lag, mean and sd for all lags}
+\FunctionTok{colnames}\NormalTok{(lag\_ccm2) }\OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"lag"}\NormalTok{, }\StringTok{"mean"}\NormalTok{, }\StringTok{"sd"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{setup-time-delayed-ccm-plots}{%
+\subsubsection{setup time-delayed CCM
+plots}\label{setup-time-delayed-ccm-plots}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#plot smoothed results}
+\NormalTok{ccmlag\_combined }\OtherTok{=} \FunctionTok{rbind}\NormalTok{(lag\_ccm1, lag\_ccm2)}
+\NormalTok{direction }\OtherTok{=} \FunctionTok{c}\NormalTok{(}\FunctionTok{rep}\NormalTok{(}\FunctionTok{paste}\NormalTok{(xname, }\StringTok{"xmap"}\NormalTok{, yname), }\AttributeTok{times =} \FunctionTok{nrow}\NormalTok{(lag\_ccm1)), }\FunctionTok{rep}\NormalTok{(}\FunctionTok{paste}\NormalTok{(yname, }\StringTok{"xmap"}\NormalTok{, xname), }\AttributeTok{times =} \FunctionTok{nrow}\NormalTok{(lag\_ccm2)))}
+\NormalTok{ccmlag }\OtherTok{=} \FunctionTok{cbind}\NormalTok{(direction, ccmlag\_combined)}
+
+\NormalTok{span }\OtherTok{=} \DecValTok{1}
+
+\NormalTok{ccmlag1 }\OtherTok{=}\NormalTok{ ccmlag[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{21}\NormalTok{,]}
+\NormalTok{ccmlag2 }\OtherTok{=}\NormalTok{ ccmlag[}\DecValTok{22}\SpecialCharTok{:}\DecValTok{42}\NormalTok{,]}
+\NormalTok{smoothbuild }\OtherTok{=} \FunctionTok{ggplot}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{data =}\NormalTok{ ccmlag1, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ lag, }\AttributeTok{y =}\NormalTok{ mean), }\AttributeTok{n =} \DecValTok{100}\NormalTok{, }\AttributeTok{span =}\NormalTok{ span, }\AttributeTok{formula =}\NormalTok{ y }\SpecialCharTok{\textasciitilde{}} \FunctionTok{poly}\NormalTok{(x,}\DecValTok{2}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{data =}\NormalTok{ ccmlag2, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ lag, }\AttributeTok{y =}\NormalTok{ mean), }\AttributeTok{n =} \DecValTok{100}\NormalTok{, }\AttributeTok{span =}\NormalTok{ span, }\AttributeTok{formula =}\NormalTok{ y }\SpecialCharTok{\textasciitilde{}} \FunctionTok{poly}\NormalTok{(x,}\DecValTok{2}\NormalTok{)) }
+  
+\CommentTok{\# extract maximum CCM skill (exclude artifacts)}
+\NormalTok{smooth\_build }\OtherTok{=} \FunctionTok{ggplot\_build}\NormalTok{(smoothbuild)}
+\NormalTok{test }\OtherTok{=} \FunctionTok{cbind}\NormalTok{(smooth\_build}\SpecialCharTok{$}\NormalTok{data[[}\DecValTok{1}\NormalTok{]]}\SpecialCharTok{$}\NormalTok{x, smooth\_build}\SpecialCharTok{$}\NormalTok{data[[}\DecValTok{1}\NormalTok{]]}\SpecialCharTok{$}\NormalTok{y)}
+\NormalTok{test }\OtherTok{=}\NormalTok{ test[}\DecValTok{12}\SpecialCharTok{:}\DecValTok{90}\NormalTok{,]}
+\NormalTok{test2 }\OtherTok{=} \FunctionTok{cbind}\NormalTok{(smooth\_build}\SpecialCharTok{$}\NormalTok{data[[}\DecValTok{2}\NormalTok{]]}\SpecialCharTok{$}\NormalTok{x, smooth\_build}\SpecialCharTok{$}\NormalTok{data[[}\DecValTok{2}\NormalTok{]]}\SpecialCharTok{$}\NormalTok{y)}
+\NormalTok{test2 }\OtherTok{=}\NormalTok{ test2[}\DecValTok{12}\SpecialCharTok{:}\DecValTok{90}\NormalTok{,]}
+\NormalTok{max\_lagYX }\OtherTok{=} \FunctionTok{as.data.frame}\NormalTok{(}\FunctionTok{cbind}\NormalTok{(test[}\FunctionTok{which.max}\NormalTok{(test[,}\DecValTok{2}\NormalTok{])], }\FunctionTok{max}\NormalTok{(test[,}\DecValTok{2}\NormalTok{])))}
+\NormalTok{max\_lagXY }\OtherTok{=} \FunctionTok{as.data.frame}\NormalTok{(}\FunctionTok{cbind}\NormalTok{(test2[}\FunctionTok{which.max}\NormalTok{(test2[,}\DecValTok{2}\NormalTok{])], }\FunctionTok{max}\NormalTok{(test2[,}\DecValTok{2}\NormalTok{])))}
+
+\NormalTok{lagplot }\OtherTok{=} \FunctionTok{ggplot}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{data =}\NormalTok{ ccmlag, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ ccmlag}\SpecialCharTok{$}\NormalTok{lag, }\AttributeTok{y =}\NormalTok{ ccmlag}\SpecialCharTok{$}\NormalTok{mean, }\AttributeTok{color =}\NormalTok{ ccmlag}\SpecialCharTok{$}\NormalTok{direction), }\AttributeTok{n =} \DecValTok{100}\NormalTok{, }\AttributeTok{span =}\NormalTok{ span, }\AttributeTok{formula =}\NormalTok{ y }\SpecialCharTok{\textasciitilde{}} \FunctionTok{poly}\NormalTok{(x,}\DecValTok{2}\NormalTok{), }\AttributeTok{se =} \ConstantTok{TRUE}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{limits =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{), }\AttributeTok{expand =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{)) }\SpecialCharTok{+} \FunctionTok{theme\_bw}\NormalTok{() }\SpecialCharTok{+} 
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.title =} \FunctionTok{element\_blank}\NormalTok{(), }\AttributeTok{legend.position =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\FloatTok{0.9}\NormalTok{), }\AttributeTok{legend.key =} \FunctionTok{element\_blank}\NormalTok{(), }\AttributeTok{legend.background=}\FunctionTok{element\_blank}\NormalTok{(), }\AttributeTok{legend.justification =} \StringTok{"right"}\NormalTok{, }\AttributeTok{axis.text.x =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{size =} \DecValTok{12}\NormalTok{), }\AttributeTok{axis.text.y =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{size =} \DecValTok{12}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{x =} \StringTok{"time lag"}\NormalTok{, }\AttributeTok{y =} \FunctionTok{expression}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Cross map skill "}\NormalTok{,rho))) }\SpecialCharTok{+} \FunctionTok{scale\_x\_continuous}\NormalTok{(}\AttributeTok{breaks =} \FunctionTok{seq}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{20}\NormalTok{,}\DecValTok{20}\NormalTok{,}\DecValTok{2}\NormalTok{), }\AttributeTok{expand =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{)) }\SpecialCharTok{+} 
+  \FunctionTok{geom\_vline}\NormalTok{(}\AttributeTok{xintercept =} \DecValTok{0}\NormalTok{, }\AttributeTok{linetype =} \StringTok{"dashed"}\NormalTok{, }\AttributeTok{alpha =} \FloatTok{0.25}\NormalTok{) }\SpecialCharTok{+}
+  \CommentTok{\#geom\_line(data = data.frame(x = 0, y = c(0, 0.8)), aes(x = x , y = y), linetype = "dashed", alpha = 0.25) +}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{data =}\NormalTok{ max\_lagYX, }\FunctionTok{aes}\NormalTok{ (}\AttributeTok{x =}\NormalTok{ max\_lagYX}\SpecialCharTok{$}\NormalTok{V1, }\AttributeTok{y =}\NormalTok{ max\_lagYX}\SpecialCharTok{$}\NormalTok{V2, }\AttributeTok{color =}\NormalTok{ ccmlag}\SpecialCharTok{$}\NormalTok{direction[}\DecValTok{1}\NormalTok{]), }\AttributeTok{shape =} \DecValTok{8}\NormalTok{, }\AttributeTok{size =} \DecValTok{3}\NormalTok{, }\AttributeTok{stroke =} \DecValTok{1}\NormalTok{, }\AttributeTok{show.legend =} \ConstantTok{FALSE}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{data =}\NormalTok{ max\_lagXY, }\FunctionTok{aes}\NormalTok{ (}\AttributeTok{x =}\NormalTok{ max\_lagXY}\SpecialCharTok{$}\NormalTok{V1, }\AttributeTok{y =}\NormalTok{ max\_lagXY}\SpecialCharTok{$}\NormalTok{V2, }\AttributeTok{color =}\NormalTok{ ccmlag}\SpecialCharTok{$}\NormalTok{direction[}\DecValTok{22}\NormalTok{]), }\AttributeTok{shape =} \DecValTok{8}\NormalTok{, }\AttributeTok{size =} \DecValTok{3}\NormalTok{, }\AttributeTok{stroke =} \DecValTok{1}\NormalTok{, }\AttributeTok{show.legend =} \ConstantTok{FALSE}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_color\_manual}\NormalTok{(}\AttributeTok{values=}\FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}red\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}blue\textquotesingle{}}\NormalTok{))}
+\FunctionTok{print}\NormalTok{(lagplot)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# create results table}
+\NormalTok{tabXY }\OtherTok{=} \FunctionTok{cbind}\NormalTok{(}\FunctionTok{paste}\NormalTok{(xname, }\StringTok{"xmap"}\NormalTok{, yname), Ex, taux, }\FunctionTok{round}\NormalTok{(x\_xmap\_y\_means[}\DecValTok{11}\NormalTok{,}\DecValTok{9}\NormalTok{], }\AttributeTok{digits =} \DecValTok{3}\NormalTok{), }\FunctionTok{round}\NormalTok{(cor[}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{], }\AttributeTok{digits =} \DecValTok{3}\NormalTok{), }\FunctionTok{round}\NormalTok{(max\_lagYX[}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{], }\AttributeTok{digits =} \DecValTok{3}\NormalTok{))}
+\FunctionTok{colnames}\NormalTok{(tabXY) }\OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"CCM variables"}\NormalTok{, }\StringTok{"E"}\NormalTok{, }\StringTok{"tau"}\NormalTok{, }\StringTok{"rho"}\NormalTok{, }\StringTok{"correlation"}\NormalTok{, }\StringTok{"optimal lag"}\NormalTok{)}
+\NormalTok{tabYX }\OtherTok{=} \FunctionTok{cbind}\NormalTok{(}\FunctionTok{paste}\NormalTok{(yname, }\StringTok{"xmap"}\NormalTok{, xname), Ey, tauy, }\FunctionTok{round}\NormalTok{(y\_xmap\_x\_means[}\DecValTok{11}\NormalTok{,}\DecValTok{9}\NormalTok{], }\AttributeTok{digits =} \DecValTok{3}\NormalTok{), }\FunctionTok{round}\NormalTok{(cor[}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{], }\AttributeTok{digits =} \DecValTok{3}\NormalTok{), }\FunctionTok{round}\NormalTok{(max\_lagXY[}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{], }\AttributeTok{digits =} \DecValTok{3}\NormalTok{))}
+\FunctionTok{colnames}\NormalTok{(tabXY) }\OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"CCM variables"}\NormalTok{, }\StringTok{"E"}\NormalTok{, }\StringTok{"tau"}\NormalTok{, }\StringTok{"rho"}\NormalTok{, }\StringTok{"correlation"}\NormalTok{, }\StringTok{"optimal lag"}\NormalTok{)}
+\NormalTok{tab }\OtherTok{=} \FunctionTok{rbind}\NormalTok{(tabXY, tabYX)}
+
+\CommentTok{\# print the table}
+ \FunctionTok{kable}\NormalTok{(tab) }\SpecialCharTok{\%\textgreater{}\%}
+   \FunctionTok{kable\_styling}\NormalTok{() }\CommentTok{\#\%\textgreater{}\%}
+\end{Highlighting}
+\end{Shaded}
+
+
+\end{document}

@@ -132,9 +132,9 @@ dmypy.json
 #mylist
 data/
 .ipynb_checkpoints
-*/.ipynb_checkpoints/*
-*.csv
+*/.ipynb_checkpoints/
 *.log
+*.csv
 *.txt
 *.zip
 MetaRegression/data/
@@ -145,6 +145,14 @@ system.ipynb
 nohup.out
 *.svg
 *.jpg
+*.png
 *.Rdata
+*.RData
+*.wav
+*.docx
 *.rds
+*.Rout
+*.json
+*.pdf
 *.parquet
+/loinc

@@ -1,0 +1,448 @@
+---
+title: "Pipeline for implementing climate data into CCM"
+author: "Oliver A. Kern and Vasilis Dakos"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=T, message=F, warning=FALSE,
+                       fig.align='center', tidy=FALSE, eval = FALSE)
+```
+
+# code is written to run on rEDM version 1.2.3
+
+# require(devtools)
+
+# install_version("rEDM", version = "1.2.3", repos = "<http://cran.us.r-project.org>")
+
+```{r load packages, include=FALSE}
+# Load necessary packages into R
+Packages <- c("dplyr", "ggplot2", "plotly", "rEDM", "gridExtra", "knitr", "matrixStats", "data.table", "readxl", "kableExtra", "ROCR")
+invisible(lapply(Packages, library, character.only = TRUE))
+
+options(digits=3)
+```
+
+# Load Datasets, data should be in two columns containing age (column 1) and proxy data (column 2)
+
+```{r, include=FALSE}
+CCM_example_data = read_excel("CCM_example_data.xlsx") # change path accordingly or load data manually
+
+### Antarctica Data
+CO2 = CCM_example_data[1:1096, c(1,2)]
+CH4 = CCM_example_data[1:2103, c(3,4)]
+```
+
+# Define variables and temporal resolution for CCM
+
+```{r, include=FALSE}
+### define variables, their names (used in plots etc) and the time interval
+
+X = CO2 # Variable X (Proxy X)
+xname = "CO2" # name/abbreviation of variable X (e.g., CO2)
+
+
+Y = CH4 # Variable Y (Proxy Y)
+yname = "CH4" # name/abbreviation of variable Y (e.g., CH4)
+
+### define the time interval 
+xout  = seq(1,500, by = 1)      # define resolution (e.g., 1 ka) and timeframe of the dataset (e.g., 1 - 500 ka)
+
+```
+
+# linear interpolation to equidistant time steps defined above
+
+```{r linear interpolation}
+
+### linear interpolation of X
+x = as.data.frame(approx(x = unlist(X[,1]), y = unlist(X[,2]), xout = xout, method = "linear"))[,2] # interpolate X to the resolution set above, then remove time component
+
+### linear interpolation of Y
+y = as.data.frame(approx(x = unlist(Y[,1]), y = unlist(Y[,2]), xout = xout, method = "linear"))[,2] # interpolate Y to the resolution set above, then remove time component
+
+# merge X and Y into a single dataframe
+model = as.data.frame(cbind(x, y))
+model = na.omit(model)
+colnames(model) = c(xname, yname)
+```
+
+# Basic Statistics
+
+## Cross-correlation and autocorrelation
+
+```{r Cross- and Autocorrelation}
+# calculate cross-correlation and autocorrelation
+
+cor = cor(model) # cross-correlation of X and Y
+
+acfx = acf(model[,1], lag.max = 1, plot = FALSE, na.action = na.pass) # autocorrelation for X
+acfy = acf(model[,2], lag.max = 1, plot = FALSE, na.action = na.pass) # autocorrelation for Y
+
+# Set up matrix with the correlation values
+cor[1,1] = acfx$acf[2]
+cor[2,2] = acfy$acf[2]
+cor = as.data.frame(cor) 
+print(cor)
+```
+
+# Simplex Projection
+
+```{r Simplex Projections}
+### Simplex projection for variable X
+
+# Run simplex for X using variable tau (1-4)
+  simplex_x = as.data.frame(cbind(seq(1,10,1),matrix(0,10,4)))
+for (i in 1:4){
+ simplex_x[,i+1] = cbind(simplex(x, lib=c(1,length(x)), pred=c(1,length(x)), tau = i)$rho)
+}
+
+# plot simplex results
+simplex_x_plot = ggplot(data = simplex_x) + theme_classic() + scale_y_continuous(expand = c(0,0)) + scale_x_continuous(expand = c(0,0), breaks = seq(0,10,1)) +
+  labs(x = "Embedding Dimension (E)", y = expression(paste("Forecast skill ",rho)), title = paste("Forecast skill vs Embedding Dimension for", xname)) +
+  geom_line(mapping = aes(x = V1, y = V2, color = "tau = 1")) +
+  geom_line(mapping = aes(x = V1, y = V3, color = "tau = 2")) +
+  geom_line(mapping = aes(x = V1, y = V4, color = "tau = 3")) +
+  geom_line(mapping = aes(x = V1, y = V5, color = "tau = 4")) +
+  theme(legend.title = element_blank(), legend.position = c(0.9,0.15)) +
+  scale_color_manual(values=c("black",'red','blue', "green"))
+
+### Simplex projection for variable Y
+
+# Run simplex for Y using variable tau (1-4)
+simplex_y = as.data.frame(cbind(seq(1,10,1),matrix(0,10,4)))
+for (i in 1:4){
+ simplex_y[,i+1] = cbind(simplex(y, lib=c(1,length(y)), pred=c(1,length(y)), tau = i)$rho)
+}
+
+# plot simplex results
+simplex_y_plot = ggplot(data = simplex_y) + theme_classic() + scale_y_continuous(expand = c(0,0)) + scale_x_continuous(expand = c(0,0), breaks = seq(0,20,1)) +
+  labs(x = "Embedding Dimension (E)", y = expression(paste("Forecast skill ",rho)), title = paste("Forecast skill vs Embedding Dimension for", yname)) +
+  geom_line(mapping = aes(x=V1, y = V2, color = "tau = 1")) +
+  geom_line(mapping = aes(x=V1, y = V3, color = "tau = 2")) +
+  geom_line(mapping = aes(x=V1, y = V4, color = "tau = 3")) +
+  geom_line(mapping = aes(x=V1, y = V5, color = "tau = 4")) +
+  theme(legend.title = element_blank(), legend.position = c(0.9,0.15)) +
+  scale_color_manual(values=c("black",'red','blue', "green"))
+```
+
+```{r, fig.width=12, fig.height=5}
+# plot results from simplex projection
+grid.arrange(simplex_x_plot, simplex_y_plot, ncol=2)
+```
+
+```{r extract optimal E and tau from simplex, warning = FALSE, message=FALSE}
+# extract optimal E and tau for X and Y based on the maximum forecast skill p from the simplex projections
+max_simplex_x = which(simplex_x == max(simplex_x[,2:5]), arr.ind = TRUE)
+Ex = as.numeric(max_simplex_x[1])
+taux = as.numeric(max_simplex_x[2]-1)
+
+max_simplex_y = which(simplex_y == max(simplex_y[,2:5]), arr.ind = TRUE)
+Ey = as.numeric(max_simplex_y[1])
+tauy = as.numeric(max_simplex_y[2]-1)
+
+### extract 5 best combinations of E and tau and convert to long format
+simplex5_x = cbind(simplex_x, seq(1,10,1))
+names(simplex5_x) = c("E", "1", "2", "3", "4", "index")
+simplex5_x = melt(simplex5_x, id.vars = c("index"))[11:50,]
+simplex5_x = simplex5_x[order(simplex5_x$value, decreasing = T),]
+simplex5_x$variable = as.numeric(simplex5_x$variable)
+
+best5_simplex_x = simplex5_x[1:5,]
+best5_simplex_x[,2] = best5_simplex_x[,2]-1
+names(best5_simplex_x) = c("E", "tau", "value")
+
+### extract 5 best combinations of E and tau and convert to long format (other direction)
+simplex5_y = cbind(simplex_y, seq(1,10,1))
+names(simplex5_y) = c("E", "1", "2", "3", "4", "index")
+simplex5_y = melt(simplex5_y, id.vars = c("index"))[11:50,]
+simplex5_y = simplex5_y[order(simplex5_y$value, decreasing = T),]
+simplex5_y$variable = as.numeric(simplex5_y$variable)
+
+best5_simplex_y = simplex5_y[1:5,]
+best5_simplex_y[,2] = best5_simplex_y[,2]-1
+names(best5_simplex_y) = c("E", "tau", "value")
+```
+
+# Convergent Cross Mapping of X vs Y
+
+For CCM to be a test of causality, two criteria must be met: 1) The cross map prediction skill is statistically significant using the full time series as the library. 2) Cross map prediction demonstrates convergence (i.e., prediction skill increases with the size of the library)
+
+Based on the optimal Emdbedding Dimension (E) found using simplex projection, we can apply CCM to test the data pairwise for causality. **We use E corresponding to the best E for the variable that we try to predict.**
+
+`lib_sizes` specifies the size of the "library" subsamples that are used, `num_samples` specifies the number of samples to be used. We still dont know what determines `lib_sizes`.
+
+X xmap Y and Y xmap X (**"A xmap B quantifies the causal effect of B on A by predicting B\^t from E lagged time-series fragments of A\^t"**)
+
+```{r CCM}
+# Setup CCM parameters
+lib = seq(0,100,10) # library_sizes for CCM
+samples = 100 # number of samples used in every CCM set
+num_surr = 100 # number of surrogate datasets created (10 for testing, >100 for actual runs)
+
+# run CCM for all variables (using best E and tau from simplex)
+x_xmap_y  <- ccm(model, E = Ex, tau = taux, lib_column = 1, target_column = 2, lib_sizes = lib, num_samples = samples, random_libs = TRUE, replace = TRUE)
+y_xmap_x  <- ccm(model, E = Ey, tau = tauy, lib_column = 2, target_column = 1, lib_sizes = lib, num_samples = samples, random_libs = TRUE, replace = TRUE)
+
+# calculate mean CCM skills at every step of lib
+x_xmap_y_means  <- ccm_means(x_xmap_y)
+x_xmap_y_means$group = as.factor(1)
+y_xmap_x_means  <- ccm_means(y_xmap_x)
+y_xmap_x_means$group = as.factor(2)
+
+### Significance Test
+#The significance test is performed by running CCM against surrogate datasets. The results are displayed as shaded areas in the main CCM plot.
+
+# define method for creating surrogate time series
+if (length(xout) < 200) {
+method = "random_shuffle"
+} else {
+method = "ebisuzaki"
+}
+
+# create surrogate time series using the "ebisuzaki" or "random_shuffle" method
+x_surr = make_surrogate_data(model[,1], method = method, num_surr = num_surr)
+y_surr = make_surrogate_data(model[,2], method = method, num_surr = num_surr)
+
+# run CCM for all variables against their surrogate data and add forecasts skills to the CCM plot:
+
+### X xmap Y (surrogate)
+x_xmap_y_surr = matrix(0, ncol = num_surr, nrow = length(lib))
+for (i in 1:num_surr){x_xmap_y_surr[,i] = ccm_means(ccm(cbind(x, y_surr[,i]), E=Ex, tau = taux, lib_column = 1, target_column = 2, lib_sizes = lib, random_libs = TRUE, replace = TRUE))$rho}
+
+### Y xmap X (surrogate)
+y_xmap_x_surr = matrix(0, ncol = num_surr, nrow = length(lib))
+for (i in 1:num_surr){y_xmap_x_surr[,i] = ccm_means(ccm(cbind(y, x_surr[,i]), E=Ey, tau = tauy, lib_column = 1, target_column = 2, lib_sizes = lib, random_libs = TRUE, replace = TRUE))$rho}
+```
+
+```{r plot CCM results}
+# Calculate 5th to 95th percentiles of the results from the significance test
+
+### X xmap Y
+percentile_x_xmap_y = apply(na.omit(x_xmap_y_surr), 1, quantile, probs = c(0.05, 0.95))
+percentile_x_xmap_y = as.data.frame(t(rbind(lib[2:length(lib)], percentile_x_xmap_y)))
+percentile_x_xmap_y$group = as.factor(1)
+
+### Y xmap X
+percentile_y_xmap_x = apply(na.omit(y_xmap_x_surr), 1, quantile, probs = c(0.05, 0.95))
+percentile_y_xmap_x = as.data.frame(t(rbind(lib[2:length(lib)], percentile_y_xmap_x)))
+percentile_y_xmap_x$group = as.factor(2)
+
+# Setup plots from CCM and the significance test
+ggplot() + theme_classic() + 
+  labs(x = "Library size (L)", y = expression(paste("Cross map skill ",rho)), title = paste("Convergent Cross Mapping for" , xname, "and", yname)) + 
+  scale_x_continuous(breaks = lib, expand = c(0,0), limits = c(lib[2], max(lib))) + 
+  scale_y_continuous(limits = c(0,1), expand = c(0,0)) + 
+  theme(legend.title = element_blank(), legend.position = c(0.85, 0.95)) +
+  geom_line(data = x_xmap_y_means, aes(x = x_xmap_y_means$lib_size, y = x_xmap_y_means$rho, color = group)) + # X xmap Y data
+  geom_ribbon(data = percentile_x_xmap_y, aes(x = percentile_x_xmap_y$V1, ymin=pmax(0, percentile_x_xmap_y$`5%`), ymax = percentile_x_xmap_y$`95%`, fill=group), alpha=.4) + # X xmap Y (surrogate) data
+  geom_line(data = y_xmap_x_means, aes(x = y_xmap_x_means$lib_size, y = y_xmap_x_means$rho, color = group)) + # Y xmap X data
+  geom_ribbon(data = percentile_y_xmap_x, aes(x = percentile_y_xmap_x$V1, ymin=pmax(0, percentile_y_xmap_x$`5%`), ymax = percentile_y_xmap_x$`95%`, fill=group), alpha=.4) + # Y xmap X (surrogate) data
+  geom_hline(data = cor, aes(yintercept = abs(cor[1,2])), color = "black", linetype = "dashed") + # linear correlation (see above)
+  scale_color_manual(values=c('red','blue'), labels = c(paste(xname, "xmap" , yname), paste(yname, "xmap" , xname))) +
+  scale_fill_manual(values=c('red','blue'), guide = FALSE) +
+  annotate("text", x = 12, y = 0.95, label = paste("for E =",Ex,",","tau =", taux), hjust = 0) +
+  annotate("text", x = 12, y = 0.90, label = paste("and E =",Ey,",","tau =", tauy), hjust = 0)
+```
+
+# Sensitivity Test
+
+Running CCM for the 5 combinations of E (1:10) and tau (1:4) that yielded the highest forecast skill in the simplex projection. We then run the CCM with these parameters for all variables against surrogate datasets to test the sensitivity of the method
+
+```{r sensitivity test, warning = F}
+libsize = seq(10,100,10) # set library size for CCM runs
+
+# setup the sensitivity test for x xmap y using the 5 best combinations of E and tau
+x_sensitivity = as.data.frame(matrix(0,10,5)) # setup dataframe 
+
+# run CCM for all 5 combinations
+x_sensitivity[,1] = ccm_means(ccm(model, E=best5_simplex_x[1,1], tau=best5_simplex_x[1,2], lib_column = 1, target_column = 2, lib_sizes = libsize))$rho
+x_sensitivity[,2] = ccm_means(ccm(model, E=best5_simplex_x[2,1], tau=best5_simplex_x[2,2], lib_column = 1, target_column = 2, lib_sizes = libsize))$rho
+x_sensitivity[,3] = ccm_means(ccm(model, E=best5_simplex_x[3,1], tau=best5_simplex_x[3,2], lib_column = 1, target_column = 2, lib_sizes = libsize))$rho
+x_sensitivity[,4] = ccm_means(ccm(model, E=best5_simplex_x[4,1], tau=best5_simplex_x[4,2], lib_column = 1, target_column = 2, lib_sizes = libsize))$rho
+x_sensitivity[,5] = ccm_means(ccm(model, E=best5_simplex_x[5,1], tau=best5_simplex_x[5,2], lib_column = 1, target_column = 2, lib_sizes = libsize))$rho
+for (i in 1:5){
+  colnames(x_sensitivity)[i] = paste(best5_simplex_x[i,1], best5_simplex_x[i,2])
+}
+# test sensitivity for x xmap surrogate y using the 5 best combinations of E and tau
+x_sensitivity1 = matrix(0, ncol = num_surr, nrow = length(libsize))
+for (i in 1:num_surr){x_sensitivity1[,i] = ccm_means(ccm(cbind(x, y_surr[,i]), E=best5_simplex_x[1,1], tau = best5_simplex_x[1,2], lib_column = 1, target_column = 2, lib_sizes = libsize, random_libs = TRUE, replace = TRUE))$rho}
+x_sensitivity2 = matrix(0, ncol = num_surr, nrow = length(libsize))
+for (i in 1:num_surr){x_sensitivity2[,i] = ccm_means(ccm(cbind(x, y_surr[,i]), E=best5_simplex_x[2,1], tau = best5_simplex_x[2,2], lib_column = 1, target_column = 2, lib_sizes = libsize, random_libs = TRUE, replace = TRUE))$rho}
+x_sensitivity3 = matrix(0, ncol = num_surr, nrow = length(libsize))
+for (i in 1:num_surr){x_sensitivity3[,i] = ccm_means(ccm(cbind(x, y_surr[,i]), E=best5_simplex_x[3,1], tau = best5_simplex_x[3,2], lib_column = 1, target_column = 2, lib_sizes = libsize, random_libs = TRUE, replace = TRUE))$rho}
+x_sensitivity4 = matrix(0, ncol = num_surr, nrow = length(libsize))
+for (i in 1:num_surr){x_sensitivity4[,i] = ccm_means(ccm(cbind(x, y_surr[,i]), E=best5_simplex_x[4,1], tau = best5_simplex_x[4,2], lib_column = 1, target_column = 2, lib_sizes = libsize, random_libs = TRUE, replace = TRUE))$rho}
+x_sensitivity5 = matrix(0, ncol = num_surr, nrow = length(libsize))
+for (i in 1:num_surr){x_sensitivity5[,i] = ccm_means(ccm(cbind(x, y_surr[,i]), E=best5_simplex_x[5,1], tau = best5_simplex_x[5,2], lib_column = 1, target_column = 2, lib_sizes = libsize, random_libs = TRUE, replace = TRUE))$rho}
+
+# setup the sensitivity test for y xmap x using the 5 best combinations of E and tau
+y_sensitivity = as.data.frame(matrix(0,10,5)) #setup dataframe
+
+# run CCM for all 5 combinations
+y_sensitivity[,1] = ccm_means(ccm(model, E=best5_simplex_y[1,1], tau=best5_simplex_y[1,2], lib_column = 2, target_column = 1, lib_sizes = libsize))$rho
+y_sensitivity[,2] = ccm_means(ccm(model, E=best5_simplex_y[2,1], tau=best5_simplex_y[2,2], lib_column = 2, target_column = 1, lib_sizes = libsize))$rho
+y_sensitivity[,3] = ccm_means(ccm(model, E=best5_simplex_y[3,1], tau=best5_simplex_y[3,2], lib_column = 2, target_column = 1, lib_sizes = libsize))$rho
+y_sensitivity[,4] = ccm_means(ccm(model, E=best5_simplex_y[4,1], tau=best5_simplex_y[4,2], lib_column = 2, target_column = 1, lib_sizes = libsize))$rho
+y_sensitivity[,5] = ccm_means(ccm(model, E=best5_simplex_y[5,1], tau=best5_simplex_y[5,2], lib_column = 2, target_column = 1, lib_sizes = libsize))$rho
+for (i in 1:5){
+  colnames(y_sensitivity)[i] = paste(best5_simplex_y[i,1], best5_simplex_y[i,2])
+}
+
+# test sensitivity for y xmap surrogate x using the 5 best combinations of E and tau
+y_sensitivity1 = matrix(0, ncol = num_surr, nrow = length(libsize))
+for (i in 1:num_surr){y_sensitivity1[,i] = ccm_means(ccm(cbind(y, x_surr[,i]), E=best5_simplex_y[1,1], tau = , lib_column = 1, target_column = 2, lib_sizes = libsize, random_libs = TRUE, replace = TRUE))$rho}
+y_sensitivity2 = matrix(0, ncol = num_surr, nrow = length(libsize))
+for (i in 1:num_surr){y_sensitivity2[,i] = ccm_means(ccm(cbind(y, x_surr[,i]), E=best5_simplex_y[2,1], tau = best5_simplex_y[2,2], lib_column = 1, target_column = 2, lib_sizes = libsize, random_libs = TRUE, replace = TRUE))$rho}
+y_sensitivity3 = matrix(0, ncol = num_surr, nrow = length(libsize))
+for (i in 1:num_surr){y_sensitivity3[,i] = ccm_means(ccm(cbind(y, x_surr[,i]), E=best5_simplex_y[3,1], tau = best5_simplex_y[3,2], lib_column = 1, target_column = 2, lib_sizes = libsize, random_libs = TRUE, replace = TRUE))$rho}
+y_sensitivity4 = matrix(0, ncol = num_surr, nrow = length(libsize))
+for (i in 1:num_surr){y_sensitivity4[,i] = ccm_means(ccm(cbind(y, x_surr[,i]), E=best5_simplex_y[4,1], tau = best5_simplex_y[4,2], lib_column = 1, target_column = 2, lib_sizes = libsize, random_libs = TRUE, replace = TRUE))$rho}
+y_sensitivity5 = matrix(0, ncol = num_surr, nrow = length(libsize))
+for (i in 1:num_surr){y_sensitivity5[,i] = ccm_means(ccm(cbind(y, x_surr[,i]), E=best5_simplex_y[5,1], tau = best5_simplex_y[5,2], lib_column = 1, target_column = 2, lib_sizes = libsize, random_libs = TRUE, replace = TRUE))$rho}
+```
+
+```{r setup CCM statistics calculation}
+# print results from the sensitivity test as boxplots showing both the data and surrogate data
+x_sensitivity_surr = as.data.frame(t(cbind(x_sensitivity1, x_sensitivity2, x_sensitivity3, x_sensitivity4, x_sensitivity5)))
+x_sensitivity_surr2 = x_sensitivity_surr[x_sensitivity_surr$V10 < quantile(x_sensitivity_surr$V10, 0.95) & x_sensitivity_surr$V10 > quantile(x_sensitivity_surr$V10, 0.05), ]
+x_sensitivity_t = as.data.frame(t(x_sensitivity))
+
+y_sensitivity_surr = as.data.frame(t(cbind(y_sensitivity1, y_sensitivity2, y_sensitivity3, y_sensitivity4, y_sensitivity5)))
+y_sensitivity_surr2 = y_sensitivity_surr[y_sensitivity_surr$V10 < quantile(y_sensitivity_surr$V10, 0.95) & y_sensitivity_surr$V10 > quantile(y_sensitivity_surr$V10, 0.05), ]
+
+y_sensitivity_t = as.data.frame(t(y_sensitivity))
+```
+
+```{r ROC/AUC calculation, fig.width=12, fig.height=6}
+### ROC/AUC for calculations variable X
+Xdat = data.frame(cbind(as.numeric(c(x_sensitivity_t[,10] , x_sensitivity_surr2[,10])), c(rep(1, times = length(x_sensitivity_t[,10])), rep(0, times = length(x_sensitivity_surr2[,10])))))
+
+library(ROCR)
+predX <- prediction(Xdat$X1, Xdat$X2)
+
+roc.perfX = performance(predX, measure = "tpr", x.measure = "fpr")
+
+auc.perfX = performance(predX, measure = "auc")
+auc.perfX@y.values
+
+
+### ROC/AUC calculations for variable Y
+Ydat = data.frame(cbind(as.numeric(c(y_sensitivity_t[,10] , y_sensitivity_surr2[,10])), c(rep(1, times = length(y_sensitivity_t[,10])), rep(0, times = length(y_sensitivity_surr2[,10])))))
+
+library(ROCR)
+predY <- prediction(Ydat$X1, Xdat$X2)
+
+roc.perfY = performance(predY, measure = "tpr", x.measure = "fpr")
+
+auc.perfY = performance(predY, measure = "auc")
+auc.perfY@y.values
+
+### Plot results
+par(mfrow=c(1,2))
+plot(roc.perfX, main= paste(xname , "xmap", yname))
+text(x = 0.9, 0, paste("AUC =", round(as.numeric(auc.perfX@y.values), digits = 3)))
+abline(a=0, b= 1)
+plot(roc.perfY, main= paste(yname , "xmap", xname))
+text(x = 0.9, 0, paste("AUC =", round(as.numeric(auc.perfY@y.values), digits = 3)))
+abline(a=0, b= 1)
+```
+
+# Causality test with time-delayed CCM
+
+```{r lagged CCM}
+lag = seq(-10,10,1) # define range of time-delay
+vars <- names(model)[1:2] 
+
+# generate all combinations of lib_column, target_column, tp
+params <- expand.grid(lib_column = vars, 
+                      target_column = vars, 
+                      tp = lag)
+lagE =  rep(c(Ey,Ex), length(lag))
+lagtau = rep(c(tauy,taux), length(lag))
+
+# throw out cases where lib == target
+params <- params[params$lib_column != params$target_column, ]
+
+# add optimal E and tau
+params = cbind(params, lagE, lagtau)
+
+# run CCM
+xylag = model[,1:2]
+ccm_xy <- do.call(rbind, lapply(seq_len(NROW(params)), function(i) {
+    ccm(xylag, E = params$lagE[i], tau = params$lagtau[i],  
+        lib_sizes = 100, random_libs = TRUE, replace = TRUE, num_samples = 100,
+        lib_column = params$lib_column[i], 
+        target_column = params$target_column[i], 
+        tp = params$tp[i], silent = TRUE)
+}))
+
+# Calculate means and standard deviation
+# X xmap Y
+lag_ccm1 = matrix(0,100,21)
+for (i in 1:21){
+  lag_ccm1[,i] = ccm_xy[(ccm_xy$tp == i-11) & (ccm_xy$lib_column == xname),]$rho
+}
+lag_ccm1 = as.data.frame(t(rbind(lag, colMeans(lag_ccm1), colSds(lag_ccm1)))) # build data frame with lag, mean and sd for all lags
+colnames(lag_ccm1) = c("lag", "mean", "sd")
+
+# Y xmap X
+lag_ccm2 = matrix(0,100,21)
+for (i in 1:21){
+  lag_ccm2[,i] = ccm_xy[(ccm_xy$tp == i-11) & (ccm_xy$lib_column == yname),]$rho
+}
+lag_ccm2 = as.data.frame(t(rbind(lag, colMeans(lag_ccm2), colSds(lag_ccm2)))) # build data frame with lag, mean and sd for all lags
+colnames(lag_ccm2) = c("lag", "mean", "sd")
+```
+
+### setup time-delayed CCM plots
+
+```{r time-delayed CCM plots}
+#plot smoothed results
+ccmlag_combined = rbind(lag_ccm1, lag_ccm2)
+direction = c(rep(paste(xname, "xmap", yname), times = nrow(lag_ccm1)), rep(paste(yname, "xmap", xname), times = nrow(lag_ccm2)))
+ccmlag = cbind(direction, ccmlag_combined)
+
+span = 1
+
+ccmlag1 = ccmlag[1:21,]
+ccmlag2 = ccmlag[22:42,]
+smoothbuild = ggplot() +
+  geom_smooth(data = ccmlag1, aes(x = lag, y = mean), n = 100, span = span, formula = y ~ poly(x,2)) +
+  geom_smooth(data = ccmlag2, aes(x = lag, y = mean), n = 100, span = span, formula = y ~ poly(x,2)) 
+  
+# extract maximum CCM skill (exclude artifacts)
+smooth_build = ggplot_build(smoothbuild)
+test = cbind(smooth_build$data[[1]]$x, smooth_build$data[[1]]$y)
+test = test[12:90,]
+test2 = cbind(smooth_build$data[[2]]$x, smooth_build$data[[2]]$y)
+test2 = test2[12:90,]
+max_lagYX = as.data.frame(cbind(test[which.max(test[,2])], max(test[,2])))
+max_lagXY = as.data.frame(cbind(test2[which.max(test2[,2])], max(test2[,2])))
+
+lagplot = ggplot() +
+  geom_smooth(data = ccmlag, aes(x = ccmlag$lag, y = ccmlag$mean, color = ccmlag$direction), n = 100, span = span, formula = y ~ poly(x,2), se = TRUE) +
+  scale_y_continuous(limits = c(0,1), expand = c(0,0)) + theme_bw() + 
+  theme(legend.title = element_blank(), legend.position = c(1, 0.9), legend.key = element_blank(), legend.background=element_blank(), legend.justification = "right", axis.text.x = element_text(size = 12), axis.text.y = element_text(size = 12)) +
+  labs(x = "time lag", y = expression(paste("Cross map skill ",rho))) + scale_x_continuous(breaks = seq(-20,20,2), expand = c(0,0)) + 
+  geom_vline(xintercept = 0, linetype = "dashed", alpha = 0.25) +
+  #geom_line(data = data.frame(x = 0, y = c(0, 0.8)), aes(x = x , y = y), linetype = "dashed", alpha = 0.25) +
+  geom_point(data = max_lagYX, aes (x = max_lagYX$V1, y = max_lagYX$V2, color = ccmlag$direction[1]), shape = 8, size = 3, stroke = 1, show.legend = FALSE) +
+  geom_point(data = max_lagXY, aes (x = max_lagXY$V1, y = max_lagXY$V2, color = ccmlag$direction[22]), shape = 8, size = 3, stroke = 1, show.legend = FALSE) +
+  scale_color_manual(values=c('red','blue'))
+print(lagplot)
+```
+
+```{r results table}
+# create results table
+tabXY = cbind(paste(xname, "xmap", yname), Ex, taux, round(x_xmap_y_means[11,9], digits = 3), round(cor[1,2], digits = 3), round(max_lagYX[1,1], digits = 3))
+colnames(tabXY) = c("CCM variables", "E", "tau", "rho", "correlation", "optimal lag")
+tabYX = cbind(paste(yname, "xmap", xname), Ey, tauy, round(y_xmap_x_means[11,9], digits = 3), round(cor[1,2], digits = 3), round(max_lagXY[1,1], digits = 3))
+colnames(tabXY) = c("CCM variables", "E", "tau", "rho", "correlation", "optimal lag")
+tab = rbind(tabXY, tabYX)
+
+# print the table
+ kable(tab) %>%
+   kable_styling() #%>%
+```
