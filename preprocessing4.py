@@ -429,7 +429,7 @@ def combinebtpos(configs_variables, yearX=3000, n_jobs=1):
     onset = pd.read_parquet(configs_variables['datafolder']+configs_variables['site']+'/p0_onset_'+configs_variables['site']+'.parquet')
     years = list(pd.to_datetime(onset['ADMIT_DATE']).dt.year.unique())    
     bt_list = list()
-
+    
     
     covid = pd.read_parquet(datafolder+site+f"/p0_covid_status_{site}.parquet")
     # Convert each year file by assigning flag    
@@ -440,14 +440,25 @@ def combinebtpos(configs_variables, yearX=3000, n_jobs=1):
         data = process_covid(configs_variables, data, covid)
         if not data.empty:
             bt_list.append(data.copy())                        
+
         # except:
         #     print(str(year)+' not exists')
-         
+
+    def test_count(bt_list, st):
+        print(st)
+        flag0=0
+        flag1=0    
+        for data in bt_list:        
+            flag0 += (data['FLAG']==0).sum()
+            flag1 += (data['FLAG']!=0).sum()             
+        print(flag0)
+        print(flag1)
+#    test_count(bt_list, '01')
             
     # drop columns withg too much missing data
 #    bt_list = drop_too_much_nan_positive_parallel(site, yearX, bt_list, threshold, n_jobs=n_jobs)
     bt_list, remlist, flag0nan, flag1nan, flag0total, flag1total = drop_too_much_nan_positive(site, yearX, bt_list, threshold, keep_med=True)
-
+    
     # Collect all columns from different tables
     # Seperate Big table columns into cont ot bool columns
     type_list = [dict(bt.dtypes) for bt in bt_list]
@@ -478,12 +489,12 @@ def combinebtpos(configs_variables, yearX=3000, n_jobs=1):
     # Reprocess all table so they have common columns
 #    bt_list = Parallel(n_jobs=n_jobs)(delayed(df_add_column)(bt, bool_feature, allcols) for bt in bt_list)      
     bt_list = [df_add_column(bt, bool_feature, allcols) for bt in bt_list]
-    
+
     # Recombine all bt tables of different years into one
     bt_all = pd.concat(bt_list, ignore_index=True)
     
 #    bt_all = bt_ckd(site, yearX, bt_all)
-    
+
     #Rename the data columns to avoid conflict
     bt_all = bt_postprocess(site, yearX, bt_all)
     

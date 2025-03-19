@@ -1,3 +1,26 @@
+# labunify.py
+# Description: A class for unifying lab units and group LOINC code into LOINC groups.
+# Output files: local_custom_convert.csv
+# This file unify the lab units within single site
+# Output files: UCUMqualX.csv
+# This file cleans the quantitative labs
+# Output files: UCUMunitX.csv
+# This file unify the lab units globally
+# Generated file to be used in preprocessing1.unify_lab
+
+# Running steps
+# labunify_obj = labunify.labunify()
+# labunify_obj.read_loinc()
+# labunify_obj.read_lab()
+# labunify_obj.get_all_relation()
+# labunify_obj.gen_local_conversion_table()
+# labunify_obj.local_custom_convert.to_csv('local_custom_convert.csv')
+# labunify_obj.get_consensus_unit()
+# labunify_obj.UCUMunitX.to_csv('UCUMunitX.csv')
+# labunify_obj.handle_qualitative()
+# labunify_obj.UCUMqualX.to_csv('UCUMqualX.csv')
+
+
 import pandas as pd
 import xgboost as xgb
 import numpy as np
@@ -252,9 +275,4 @@ class labunify:
         laballuni6 = laballuni5.merge(laballuniby, on='GroupId')
 #            laballuni6[laballuni6['RESULT_QUAL_COUNT']>2][['GroupId', 'RESULT_QUAL']].drop_duplicates()
         self.UCUMqualX = laballuni6[['LAB_LOINC', 'GroupId']]
-    
-#labobj.read_lab()
-#labobj.laball = laball
-#labobj.read_loinc()
-#labobj.get_all_relation()
-#self.get_consensus_unit()       
+

@@ -104,8 +104,8 @@ importlib.reload(postprocessing1_SHAP)
 importlib.reload(utils_function)
 importlib.reload(parquet_splitter)
 
-#datanames = ['demo', 'vital_old', 'vital_old_nooutliner', 'dx', 'px', 'lab_g', 'lab_g_nooutliner', 'amed']
-datanames = ['lab_g', 'lab_g_nooutliner']
+datanames = ['demo', 'vital_old', 'vital_old_nooutliner', 'dx', 'px', 'lab_g', 'lab_g_nooutliner', 'amed']
+#datanames = ['lab_g', 'lab_g_nooutliner']
 
 sites = ['UTHSCSA', 'UTSW', 'MCW', 'UofU', 'UIOWA', 'UMHC', 'UNMC', 'KUMC', 'UPITT']
 #sites = ['KUMC', 'UPITT']
@@ -118,7 +118,6 @@ for configs_variable in configs_variables:
     configs_variable['rerun_flag'] = True
 
 
-    
 n_splits = int(configs_variables[0]['n_splits'])
 
 #pre-pre-processing
@@ -203,7 +202,7 @@ parasites_13 = [(runner, configs_variables, None, None, None, None, None, None) 
 patasites_meta = [parasites_0, parasites_1, parasites_2, parasites_3, parasites_35, parasites_4, parasites_5, parasites_6, parasites_7, parasites_8, parasites_9, parasites_10, parasites_11, parasites_12, parasites_13]
 #patasites_meta = [parasites_5, parasites_6, parasites_7, parasites_8, parasites_9, parasites_10, parasites_11, parasites_12, parasites_13]
 #patasites_meta = [parasites_0, parasites_1, parasites_2, parasites_3, parasites_35, parasites_4]
-patasites_meta = [parasites_12]
+#patasites_meta = [parasites_12]
 #patasites_meta = [parasites_n1, parasites_n2] #max_worker=2
 #patasites_meta = [parasites_n3] #max_worker=2
 

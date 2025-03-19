@@ -28,7 +28,7 @@ if (length(args) == 0) {
 
 arg1 <- args[1]
 
-if (arg1=='single'){
+if (arg1!='interaction'){
     path <- '/home/hoyinchan/blue/Data/data2022/shapalltmp.parquet'
 }
 
@@ -52,16 +52,106 @@ first_parts <- sapply(split_names, `[`, 1)
 targets <- unique(first_parts)
 targets <- setdiff(targets, "site")
 targets <- setdiff(targets, "")
-targets <- ifelse(targets == 'ORIGINAL', 'ORIGINAL_BMI', targets)
 
-
+if ("ORIGINAL" %in% targets) {
+  targets <- c("ORIGINAL_BMI", setdiff(targets, "ORIGINAL"))
+}
+    
 #cattarget <- list("PX:CH:J1940", "PX:09:96.72")
 #cattarget <- names(df)[sapply(df, is.logical)]
 cattargetdf <- arrow::read_parquet('/home/hoyinchan/code/AKI_CDM_PY/bool_columns.parquet')
 cattarget <- cattargetdf[['index']]
+sites <- unique(dfraw$site_d)
 
-##TEST
-#targets <- targets[1:2]
+avg_dataset <- function(df, columns_to_select, sep=1000, mode='quantile'){
+
+    print(df)
+    print(columns_to_select)
+    # String variable names for columns
+    bmi_names_col <- columns_to_select[[1]]
+    bmi_vals_col <- columns_to_select[[2]]
+
+    df <- df %>% arrange(!!sym(bmi_names_col))
+
+    # Define the range and create bins
+    min_val <- min(df[[bmi_names_col]])
+    max_val <- max(df[[bmi_names_col]])
+    bins <- seq(min_val, max_val, length.out = sep+1)
+
+    if (mode=='quantile'){
+        # Create quantile-based bins
+        df <- df %>%
+          mutate(Bin = ntile(!!sym(bmi_names_col), sep))  # Divide into 1000 quantiles      
+    }else{
+        # Assign each row to a bin
+        df <- df %>%
+          mutate(Bin = cut(!!sym(bmi_names_col), bins, include.lowest = TRUE, labels = FALSE))
+    }
+
+    # Calculate averages and counts for each bin
+    library(dplyr)
+
+    bin_summary <- df %>%
+      group_by(Bin) %>%
+      summarize(
+        Average_Value = mean(!!sym(bmi_vals_col), na.rm = TRUE),
+        Weight = n()
+      ) %>%
+      mutate(
+        Bin_Middle = (bins[Bin] + bins[Bin + 1]) / 2
+      )
+
+    bin_summary <- bin_summary %>%
+      rename(
+        !!bmi_names_col := Bin_Middle,  # Dynamically rename Bin_Middle to bmi_names_col
+        !!bmi_vals_col := Average_Value  # Dynamically rename Average_Value to bmi_vals_col
+      ) %>%
+    dplyr::select(-Bin)  # Drop the Bin column
+    bin_summary <- bin_summary[c(columns_to_select, 'Weight')]
+    print(bin_summary)
+    return(bin_summary)
+}
+
+fit_proc_singular <- function(eqn, dfraw2, target, type, site_m, site_d, weight=FALSE){
+    start_time <- Sys.time()
+    if (weight==FALSE){
+        xfit <- bam(eqn, data=dfraw2, method='REML')  
+    }else{
+        xfit <- bam(eqn, data=dfraw2, method='REML', weight=dfraw2$Weight)  
+    }    
+    
+    print(target)
+    print(type)
+    print(summary(xfit))
+    flush.console()
+    sxfit<-summary(xfit)
+    pxfit<-plot(xfit)
+    title(main = paste(site_m, site_d, target))
+    
+#    pxfit2<-termplot(xfit, data=dfraw2, se = TRUE, plot = FALSE)
+    for (i in 1:length(pxfit)){
+        pxfit[[i]]$raw=NULL    
+    }
+    pxfit2 <- pxfit
+    return(list(target, type, sxfit, pxfit, pxfit2, site_m, site_d))
+}    
+
+start_time <- Sys.time()s
+print("Meta-Running univariate regression R")
+outputname <- "gamalltmp_background_noAUC.json"
+
+if (arg1=='background'){
+    gam_proc_singular(outputname, cattarget, targets, sites, dfraw, weight=FALSE, noAUC=TRUE, returnf=FALSE, sep=100000)
+}
+
+cat("done tp")
+end_time <- Sys.time()
+runtime <- as.numeric(difftime(end_time, start_time, units = "secs"))
+cat("Meta-Running Finished univariate regression R in", runtime, " seconds")
+
+if (arg1=='background'){
+    quit()
+}
 
 fit_proc <- function(eqn, dfraw2, target, type, weight=FALSE){
     if (weight==FALSE){
@@ -112,15 +202,15 @@ gam_proc <- function(outputname, cattarget, targets, dfraw, returnf=FALSE, weigh
                 resultl<-fit_proc(eqnl, dfraw2, target, 'linear', weight=weight)
                 resultq<-fit_proc(eqnq, dfraw2, target, 'quadratic', weight=weight)
                 results<-fit_proc(eqns, dfraw2, target, 'spline', weight=weight)
-                resultt<-fit_proc(eqnt, dfraw2, target, 'spline_interaction', weight=weight)            
+                resultt<-fit_proc(eqnt, dfraw2, target, 'spline_interaction', weight=weight)       
                 result<-list(resultl, resultq, results, resultt)
              }
         }else{
             if (noAUC==FALSE){
                 eqnl <- val ~ poly(Name,1,raw=TRUE) + s(site_d,bs="re")  + s(site_m,bs="re") + roc2
                 eqnq <- val ~ poly(Name,2,raw=TRUE) + s(site_d,bs="re")  + s(site_m,bs="re") + roc2
-                eqns <- val ~ s(Name,k=10,bs='cr') + s(site_d,bs="re")  + s(site_m,bs="re") + roc2
-                eqnt <- val ~ s(Name,k=10,bs='cr') + s(site_d,bs="re")  + s(site_m,bs="re") + roc2 + ti(Name,roc2,bs='cr')            
+                eqns <- val ~ s(Name,k=30,bs=mode) + s(site_d,bs="re")  + s(site_m,bs="re") + roc2
+                eqnt <- val ~ s(Name,k=30,bs=mode) + s(site_d,bs="re")  + s(site_m,bs="re") + roc2 + ti(Name,roc2,bs=mode)            
                 resultl<-fit_proc(eqnl, dfraw2, target, 'linear')
                 resultq<-fit_proc(eqnq, dfraw2, target, 'quadratic')
                 results<-fit_proc(eqns, dfraw2, target, 'spline')
@@ -129,8 +219,8 @@ gam_proc <- function(outputname, cattarget, targets, dfraw, returnf=FALSE, weigh
             }else{
                 eqnl <- val ~ poly(Name,1,raw=TRUE) + s(site_d,bs="re")  + s(site_m,bs="re")
                 eqnq <- val ~ poly(Name,2,raw=TRUE) + s(site_d,bs="re")  + s(site_m,bs="re")
-                eqns <- val ~ s(Name,k=10,bs='cr') + s(site_d,bs="re")  + s(site_m,bs="re")
-                eqnt <- val ~ s(Name,k=10,bs='cr') + s(site_d,bs="re")  + s(site_m,bs="re")          
+                eqns <- val ~ s(Name,k=25,bs="tp") + s(site_d,bs="re")  + s(site_m,bs="re")
+                eqnt <- val ~ s(Name,k=25,bs="ps") + s(site_d,bs="re")  + s(site_m,bs="re") 
                 resultl<-fit_proc(eqnl, dfraw2, target, 'linear', weight=weight)
                 resultq<-fit_proc(eqnq, dfraw2, target, 'quadratic', weight=weight)
                 results<-fit_proc(eqns, dfraw2, target, 'spline', weight=weight)
@@ -147,64 +237,20 @@ gam_proc <- function(outputname, cattarget, targets, dfraw, returnf=FALSE, weigh
     write(output_to_python, paste0(outputname))
 }
 
-
-
-# outputname <- "gamalltmp_single_AUC_populationweight.json"
-# gam_proc(outputname, cattarget, targets, dfraw, weight=TRUE, noAUC=FALSE)
-
 start_time <- Sys.time()
 print("Meta-Running univariate regression R")
-outputname <- "/blue/yonghui.wu/hoyinchan/program_data/AKI_CDM_PY/MetaRegression/gamalltmp_single_noAUC.json"
+outputname <- "gamalltmp_single_noAUC.json"
 if (arg1=='single'){
     gam_proc(outputname, cattarget, targets, dfraw, weight=FALSE, noAUC=TRUE)
 }
+cat("done tp")
 end_time <- Sys.time()
 runtime <- as.numeric(difftime(end_time, start_time, units = "secs"))
 cat("Meta-Running Finished univariate regression R in", runtime, " seconds")
 
-cat("done")
-
-  
 if (arg1=='single'){
     quit()
 }
-
-# outputname <- "gamalltmp_single_weightAUC2.json"
-# gam_proc(outputname, cattarget, targets, dfraw, weight=TRUE, noAUC=TRUE)
-
-# outputname <- "gamalltmp_single_weightAUC2.json"
-# gam_proc(outputname, cattarget, targets, dfraw, weight=TRUE, noAUC=TRUE)
-
-# dfraw2 <- dfraw %>% filter(Feature=='LAB::2345-7(mg/dL)') 
-# #eqnl <- val ~ poly(Name,1,raw=TRUE) + s(site_d,bs="re")   
-# eqnq <- val ~ poly(Name,2,raw=TRUE) + s(site_d,bs="re")   
-# #eqns <- val ~ s(Name,k=10,bs='cr') + s(site_d,bs="re")   
-# #eqnt <- val ~ s(Name,k=10,bs='cr') + s(site_d,bs="re")    + ti(Name,roc2,bs='cr')            
-# resultq<-fit_proc(eqnq, dfraw2, 'AGE', 'quadratic')
-# #results<-fit_proc(eqns, dfraw2, 'AGE', 'spline')
-
-# toJSON(resultq, force = TRUE, digit=30)
-
-# summary(resultq)
-
-# ## 2D
-
-# dfraw2 <- dfraw %>% filter(Feature=='AGE')
-# eqnl <- val ~ s(Name,k=10,bs='cr') + s(site_d,bs="re")   + roc2
-# xfit <- bam(eqnl, data=dfraw2, method='REML') 
-# plot(xfit)
-
-# dfraw2 <- dfraw %>% filter(Feature=='AGE')
-# eqnl <- val ~ s(Name,k=10,bs='cr') + s(site_d,bs="re")   + roc2 + s(site_d,roc2,bs="re")
-# xfit <- bam(eqnl, data=dfraw2, method='REML') 
-# plot(xfit)
-
-# summary(xfit)
-
-# Try 2 feature interaction
-
-
-
 
 
 target_combo = combn(targets, 2, simplify = FALSE)
@@ -216,8 +262,7 @@ combined_list <- c(target_combo, reversed_target_combo)
 combined_list
 
 
-
-gam_proc2d <- function(cattarget, dfraw, f1, f2, stg, fs, oversample, model_type, returnf = FALSE) {
+gam_proc2d <- function(cattarget, dfraw, f1, f2, stg, fs, oversample, model_type, returnf = FALSE, mode="tp") {
 
     f1str <- str_replace_all(f1,'::','_')
     f1str <- str_replace_all(f1str,'/','per')
@@ -232,9 +277,10 @@ gam_proc2d <- function(cattarget, dfraw, f1, f2, stg, fs, oversample, model_type
    
     if (!returnf){
 #    if (TRUE){
-        filename <- paste0('/blue/yonghui.wu/hoyinchan/program_data/AKI_CDM_PY/MetaRegression/gam2d_tmp/','gam2d_tmp','_',f1str,'_',f2str,'_',stg,'_',fs,'_',oversample,'_',model_type,'.json')
+        filename <- paste0('gam2d_tmp/','gam2d_tmp','_',f1str,'_',f2str,'_',stg,'_',fs,'_',oversample,'_',model_type,'.json')
         if (file.exists(filename)){
             print(paste0('Exists: ','gam2d_tmp','_',f1str,'_',f2str,'_',stg,'_',fs,'_',oversample,'_',model_type,'.json'))
+            flush.console()
             return()
         }    
         dfraw <- arrow::read_parquet(path)
@@ -249,10 +295,10 @@ gam_proc2d <- function(cattarget, dfraw, f1, f2, stg, fs, oversample, model_type
         # }
     }
     
-    eqn_cc <- val ~ s(Name.x,k=10,bs='cr') + s(Name.y,k=10,bs='cr') + s(site_d,bs="re") + s(site_m,bs="re") + ti(Name.x,Name.y,k=10,bs='cr')
-    eqn_cd <- val ~ s(Name.x,k=10,bs='cr') + s(Name.x,by=Name.y,k=10,bs='cr') + Name.y + s(site_d,bs="re") + s(site_m,bs="re")
+    eqn_cc <- val ~ s(Name.x,k=25,bs=mode) + s(Name.y,k=25,bs=mode) + s(site_d,bs="re") + s(site_m,bs="re") + ti(Name.x,Name.y,k=25,bs=mode)
+    eqn_cd <- val ~ s(Name.x,k=25,bs=mode) + s(Name.x,by=Name.y,k=25,bs=mode) + Name.y + s(site_d,bs="re") + s(site_m,bs="re")
 
-    eqn_cs <- val ~ s(Name.x,k=10,bs='cr') + ti(Name.x,Name.y,k=10,bs='cr') + s(site_d,bs="re") + s(site_m,bs="re")
+    eqn_cs <- val ~ s(Name.x,k=25,bs=mode) + ti(Name.x,Name.y,k=25,bs=mode) + s(site_d,bs="re") + s(site_m,bs="re")
     
     if (f1 %in% cattarget & !f2 %in% cattarget){
         tmp = f1
@@ -295,43 +341,10 @@ gam_proc2d <- function(cattarget, dfraw, f1, f2, stg, fs, oversample, model_type
         return(result)
     }
     output_to_python <- toJSON(result, force = TRUE, digit=30)
-    write(output_to_python, filename)    
+    write(output_to_python, filename)
+    xfit
 }
 
-read_config <- function(file_path) {
-  # Read the lines from the file
-  lines <- readLines(file_path)
-  
-  # Initialize an empty list to store the configuration
-  config <- list()
-  
-  # Iterate over each line
-  for (line in lines) {
-    # Split the line into key and value at the first '='
-    parts <- strsplit(line, "=", fixed = TRUE)[[1]]
-    
-    # Trim any leading or trailing whitespace from key and value
-    key <- trimws(parts[1])
-    value <- trimws(parts[2])
-    
-    # Convert logical values
-    if (value == "True") {
-      value <- TRUE
-    } else if (value == "False") {
-      value <- FALSE
-    }
-    
-    # Convert numerical values
-    if (grepl("^-?[0-9.]+$", value)) {
-      value <- as.numeric(value)
-    }
-    
-    # Add the key-value pair to the list
-    config[[key]] <- value
-  }
-  
-  return(config)
-}
 
 file_path <- "/home/hoyinchan/code/AKI_CDM_PY/configs_files/publish_config/configs_KUMC.txt"
 config <- read_config(file_path)
@@ -365,4 +378,3 @@ cat("Meta-Running Finished multivariate regression R in", runtime, " seconds")
 print('done')
 
 #gam_proc2d(cattarget, dfraw, targets[1], targets[2], config$stg, config$fs, config$oversample, config$model_type)
-

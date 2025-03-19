@@ -272,12 +272,15 @@ def plot_feature_importance(df_importances_stat2, translator, modify_list, inclu
     
     #Customize height if overlap
     df_importances_stat = df_importances_stat2.copy()
+        
     df_importances_stat['cusheight'] = 1
     for mf in modify_list:
-        df_importances_stat.loc[mf, 'cusheight'] = 1.75
-
+        if mf in df_importances_stat.index:
+            df_importances_stat.loc[mf, 'cusheight'] = 1.75
+       
     df = df_importances_stat
     plt.figure(figsize=(20, 12))
+    
     
     scatter = plt.scatter(df['Median'], df['Count'], c=df['IQR'], cmap='coolwarm', s=200)
 
@@ -335,7 +338,8 @@ def plot_feature_importancer2(df_importances_stat2, external_heatmap_df, transla
     
     df_importances_stat['cusheight'] = 1
     for mf in modify_list:
-        df_importances_stat.loc[mf, 'cusheight'] = 1.75
+        if mf in df_importances_stat.index:
+            df_importances_stat.loc[mf, 'cusheight'] = 1.75
     
     external_heatmap_df = external_heatmap_df.rename(columns={'0':'Feature Id', 'r.sq_spline_noAUC':'heap'})
     external_heatmap_df['Feature Id no unit'] = external_heatmap_df['Feature Id'].str.split('(').str[0]

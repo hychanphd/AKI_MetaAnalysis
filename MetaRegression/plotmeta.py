@@ -35,8 +35,8 @@ from joblib import Parallel, delayed
 from joblib import parallel_backend
 import seaborn as sns
 
-from catboost import Pool, cv
-import shap as sp
+#from catboost import Pool, cv
+#import shap as sp
 from os.path import exists
 import itertools
 from scipy.interpolate import BSpline, make_interp_spline, interp1d
@@ -78,6 +78,7 @@ class plotmeta:
         self.gamdata_plotdatag = dict()
         self.gamdata_plotdatap = dict()
         self.shapdf = None
+        self.gamdata_plotdata_background = None
         self.plot_range = None
 #        self.cattarget = ["PX:CH:J1940", "PX:09:96.72"]
         self.translator = utils_code2name.code2name()
@@ -90,13 +91,27 @@ class plotmeta:
         self.shapdf = pd.read_parquet('/home/hoyinchan/blue/Data/data2022/'+'shapalltmp.parquet')
         self.features = [x for x in np.unique(list(self.shapdf.columns.str.split('_').str[0])) if x != 'site']
         self.features = ['ORIGINAL_BMI' if feature == 'ORIGINAL' else feature for feature in self.features]        
-            
+
+    def get_meta_data_background(self, filename="gamalltmp_background_noAUC.json"):
+#        filename2=self.home_data_directory+"gamalltmp_background_noAUC.json"
+        filename2="/home/hoyinchan/code/AKI_CDM_PY/MetaRegression/"+"gamalltmp_background_noAUC.json"
+        gamdataX = pd.read_json(filename2)
+        gamdata = pd.DataFrame(list(gamdataX[0]))
+        intercepts = pd.json_normalize(gamdata[2])['p.coeff']
+        gamdata_plotdata = gamdata[[0,3,5,6]]
+        gamdata_plotdata = gamdata_plotdata.applymap(lambda x: x[0] if isinstance(x, list) and len(x) == 1 else x)
+        expanded_details = pd.json_normalize(gamdata_plotdata[3])
+        df = pd.concat([gamdata_plotdata.drop(columns=[3]), expanded_details, intercepts], axis=1)
+        df.rename(columns={0: "Feature", 5: "site_m", 6: "site_d"}, inplace=True)          
+        self.gamdata_plotdata_background = df
+    
     def get_meta_data(self, filename="gamalltmp_single.json"):
         if self.filename == 'gamalltmp_double_interaction':
-            gamdata = pd.read_pickle('/home/hoyinchan/blue/program_data/AKI_CDM_PY/MetaRegression/gamalltmp_double_interaction_noAUC_json'+".pkl")
-            gamdata.columns= [-1,0,1,2]
-            gamdata = gamdata.explode(-1)
-            self.get_meta_data_sub(gamdata, 'double_interaction')
+            self.gamdata = pd.read_pickle('/home/hoyinchan/blue/program_data/AKI_CDM_PY/MetaRegression/gamalltmp_double_interaction_noAUC_json'+".pkl")
+            self.gamdata = self.gamdata.drop('file_source',axis=1)
+            self.gamdata.columns= [-1,0,1,2]
+            self.gamdata = self.gamdata.explode(-1)
+            self.get_meta_data_sub(self.gamdata, 'double_interaction')
         else:
 #            gamdata = pd.read_json(self.filename+".json")
             gamdataX = pd.read_json(filename)
@@ -221,8 +236,12 @@ class plotmeta:
         # shapdf = shapdf.sort_values('Name')
         def interpolate_raw(df):
             return interpolate.UnivariateSpline(df['Name'], df['val'],k=5)
+        def interpolate_raw2(df):
+            print('Using Rbf')
+            return interpolate.Rbf(df['Name'].values.reshape(-1, 1), df['val'].values, kernel='thin_plate', smoothing=1)
+            
 #        raw_fits = shapdf.groupby(['site_d', 'site_m', 'Feature']).apply(interpolate_raw).reset_index()
-        raw_fits = shapdf.groupby(['site_d', 'site_m', 'Feature']).apply(interpolate_raw).reset_index()
+        raw_fits = shapdf.groupby(['site_d', 'site_m', 'Feature']).apply(interpolate_raw2).reset_index()
         return [feature, raw_fits]
 
     def calculate_local_fit_all(self, n_jobs=4):
@@ -230,8 +249,103 @@ class plotmeta:
 #        self.fits = [self.calculate_local_fit(feature) for feature in self.shapdf['Feature'].unique()]
         self.fits = [self.calculate_local_fit(feature) for feature in self.features]
         self.fits = pd.DataFrame(self.fits)
-    
+
     def plot_meta1(self, feature, filter_sitem=['MCRI'], ext_obj1=None, ext_obj2=None, ax=None, alpha=0.1, axis_label=True, margin=1):
+    #        raw_fits = self.calculate_local_fit(feature)
+        gfc = self.gen_fit_character()
+        raw_fits = self.gamdata_plotdata_background[self.gamdata_plotdata_background['Feature']==feature]
+        for ffea in filter_sitem:
+            raw_fits = raw_fits[raw_fits['site_m']!=ffea]
+    #            raw_fits = raw_fits[raw_fits['site_m']!=filter_sitem]
+    #        plt.figure(figsize=(16,16), dpi=400) 
+        if ax is None:
+            ax = plt.gca() 
+        ax.axhline(y=0, linestyle='--', color='r')
+
+        #Note: The gamdata_plotdataX.loc[:,'y'] fit is generated without the intercept, the plot has to add back the intercept for correct value
+
+        gamdata_plotdataX = self.gamdata_plotdata1d['spline'][self.gamdata_plotdata1d['spline'][0]==feature].reset_index()
+        spline_x = np.array(gamdata_plotdataX.loc[:,'x'].iloc[0])
+
+
+        ax.plot(spline_x, spline_x*(gfc[gfc[0]==feature]['slope_linear'].iloc[0])+gfc[gfc[0]==feature]['intercept_linear'].iloc[0], linewidth=5, color='y', label='linear')
+    #        gamdata_plotdataX = self.gamdata_plotdatap['linear'][self.gamdata_plotdatap['linear'][0]==feature].reset_index().loc[0,3]        
+    #        ax.plot(gamdata_plotdataX.loc[:,'x'], gamdata_plotdataX.loc[:,'y']+gfc[gfc[0]==feature]['intercept_linear'].iloc[0], linewidth=5, color='y', label='linear')
+    #        ax.plot(gamdata_plotdataX.loc[:,'x'], gamdata_plotdataX.loc[:,'x']*gfc[gfc[0]==feature]['slope_linear'].iloc[0]+
+    #                                                gfc[gfc[0]==feature]['intercept_linear'].iloc[0], linewidth=5, color='y', label='linear')
+
+
+        ax.plot(spline_x, spline_x**2*(gfc[gfc[0]==feature]['curvature_quadratic'].iloc[0])+spline_x*(gfc[gfc[0]==feature]['slope_quadratic'].iloc[0])+gfc[gfc[0]==feature]['intercept_quadratic'].iloc[0], linewidth=5, color='g', label='quadratic')
+    #        gamdata_plotdataX = self.gamdata_plotdatap['quadratic'][self.gamdata_plotdatap['quadratic'][0]==feature].reset_index().loc[0,3]        
+    #        ax.plot(gamdata_plotdataX.loc[:,'x'], gamdata_plotdataX.loc[:,'y']+gfc[gfc[0]==feature]['intercept_quadratic'].iloc[0], linewidth=5, color='g', label='quadratic')
+        # ax.plot(gamdata_plotdataX.loc[:,'x'], np.square(gamdata_plotdataX.loc[:,'x'])*gfc[gfc[0]==feature]['curvature_quadratic'].iloc[0]+
+        #                                         gamdata_plotdataX.loc[:,'x']*gfc[gfc[0]==feature]['slope_quadratic'].iloc[0]+
+        #                                         gfc[gfc[0]==feature]['intercept_quadratic'].iloc[0], linewidth=5, color='g', label='quadratic')
+
+        gamdata_plotdataX = self.gamdata_plotdata1d['spline'][self.gamdata_plotdata1d['spline'][0]==feature].reset_index()        
+        ax.plot(gamdata_plotdataX.loc[0,'x'], gamdata_plotdataX.loc[0,'fit']+gfc[gfc[0]==feature]['intercept_spline'].iloc[0], linewidth=5, color='b', label='spline')
+
+
+        if ext_obj1 is not None:
+            gamdata_plotdataX1 = ext_obj1.gamdata_plotdata1d[label][ext_obj1.gamdata_plotdata1d[label][0]==feature].reset_index()                    
+            ax.plot(gamdata_plotdataX1.loc[0,'x'], gamdata_plotdataX1.loc[0,'fit'], linewidth=5, color='r', label='interaction')
+
+        if ext_obj2 is not None:
+            gamdata_plotdataX2 = ext_obj2.gamdata_plotdata1d[label][ext_obj2.gamdata_plotdata1d[label][0]==feature].reset_index()                    
+            ax.plot(gamdata_plotdataX2.loc[0,'x'], gamdata_plotdataX2.loc[0,'fit'], linewidth=5, color='r')
+
+        for i in raw_fits.index:            
+            ax.plot(raw_fits.loc[i,'x'], [x+raw_fits.loc[i,'p.coeff'][0]  for y in raw_fits.loc[i,'fit'] for x in y], alpha=alpha)            
+    #       ax.plot(spline_x, raw_fits.loc[i,0](spline_x), alpha=alpha)                    
+            # b1 = self.plot_range['Feature'] == raw_fits.loc[i,'Feature']
+            # b2 = self.plot_range['site_d'] == raw_fits.loc[i,'site_d']
+            # b3 = self.plot_range['site_m'] == raw_fits.loc[i,'site_m']
+            # minx = self.plot_range[np.logical_and(b1,np.logical_and(b2,b3))].iloc[0,3]
+            # maxx = self.plot_range[np.logical_and(b1,np.logical_and(b2,b3))].iloc[0,4]            
+            # xcood = np.array(gamdata_plotdataX.loc[0,'x'])
+            # xcood = xcood[xcood>=minx]
+            # xcood = xcood[xcood<=maxx]
+    #            ax.plot(xcood, raw_fits.loc[i,0](xcood), alpha=alpha)
+
+        #ax.scatter(shapdf.loc[:,'Name'], shapdf.loc[:,'val'])
+        ylimmax = (gamdata_plotdataX.loc[0,'fit']+gfc[gfc[0]==feature]['intercept_spline'].iloc[0]).max()*1.1
+        ylimmin = (gamdata_plotdataX.loc[0,'fit']+gfc[gfc[0]==feature]['intercept_spline'].iloc[0]).min()*1.1
+
+    #        ax.set_ylim([ylimmin, ylimmax])
+
+        ax.fill_between(gamdata_plotdataX.loc[0,'x'], gamdata_plotdataX.loc[0,'fit']-1.96*np.array(gamdata_plotdataX.loc[0,'se']), gamdata_plotdataX.loc[0,'fit']+1.96*np.array(gamdata_plotdataX.loc[0,'se']), alpha=0.3)  
+        print((min(gamdata_plotdataX.loc[0,'x']), max(gamdata_plotdataX.loc[0,'x'])))
+        ax.set_xlim(min(gamdata_plotdataX.loc[0,'x']), max(gamdata_plotdataX.loc[0,'x']))
+        ax.grid(alpha=0.2)
+        pic_filname = self.filename+'_'+feature+'.svg'
+        pic_filname = pic_filname.replace('::','_').replace('/','per').replace('(','_').replace(')','_')
+        ax.set_title(feature)
+        if axis_label:
+            ax.set_xlabel('value')
+            ax.set_ylabel('log_odd_change')
+        else:
+            ax.set_xlabel('')
+            ax.set_ylabel('')            
+        ax.legend()
+
+
+        ymax = max(gamdata_plotdataX.loc[0,'fit']+gfc[gfc[0]==feature]['intercept_spline'].iloc[0])
+        ymin = min(gamdata_plotdataX.loc[0,'fit']+gfc[gfc[0]==feature]['intercept_spline'].iloc[0])
+        # Calculate the range and margin
+        yrange = ymax - ymin
+
+        # Set the new limits with margin
+        ymin_with_margin = ymin - margin/2 * yrange
+        ymax_with_margin = ymax + margin/2 * yrange
+
+        ax.set_ylim(ymin_with_margin, ymax_with_margin)
+
+    #        plt.savefig(pic_filname, bbox_inches ='tight')
+    #        plt.show()
+        return ylimmin, ylimmax
+        
+        
+    def plot_meta1_old(self, feature, filter_sitem=['MCRI'], ext_obj1=None, ext_obj2=None, ax=None, alpha=0.1, axis_label=True, margin=1):
 #        raw_fits = self.calculate_local_fit(feature)
         gfc = self.gen_fit_character()
         raw_fits = self.fits[self.fits[0]==feature].iloc[0,1]
@@ -378,6 +492,7 @@ class plotmeta:
         self.gamdata_plotdatag = ext_obj.gamdata_plotdatag
         self.fits = ext_obj.fits
         self.shapdf = ext_obj.shapdf
+        self.gamdata_plotdata_background = ext_obj.gamdata_plotdata_background
         self.plot_range = ext_obj.plot_range
         self.features = ext_obj.features
         
@@ -392,14 +507,11 @@ class plotmeta:
             self.fit_table_df = self.gamdata_fitdata[[-1, 0, 'AUC_slope', 'r.sq']]
         else:
             self.fit_table_df = self.gamdata_fitdata[[0, 'AUC_slope', 'r.sq']]
-
-            
-            
-            
+         
     def cal_plot_range(self):
 #        self.plot_range = self.shapdf[['Feature', 'site_d', 'site_m', 'Name']].groupby(['Feature', 'site_d', 'site_m']).agg([min,max]).reset_index()
         xxx = self.shapdf[['site_d', 'site_m'] + [x+"_Names" for x in self.features if x not in list(self.cattarget)]]
-        xxx.columns = ['site_d', 'site_m'] + [x for x in self.features]
+        xxx.columns = ['site_d', 'site_m'] + [x for x in self.features if x not in list(self.cattarget)]
         xxx = xxx.groupby(['site_d', 'site_m']).agg([min,max]).reset_index()
         xxx = xxx.rename({'ORIGINAL_BMI':'ORIGINALBMI'},axis=1)
 
@@ -708,6 +820,7 @@ class plotmeta:
         feature2 = list()
         fitdata = list()
         plotdata = list()
+        file_source = list()
         for file in alliles:
             with open(path+file, 'r') as infile:
                 tmp = json.load(infile)
@@ -715,7 +828,8 @@ class plotmeta:
                 feature2.append(tmp[1])
                 fitdata.append(tmp[2])
                 plotdata.append(tmp[3])
-        pd.DataFrame({'feature1':feature1, 'feature2':feature2, 'fitdata':fitdata, 'plotdata':plotdata} ).to_pickle('/home/hoyinchan/blue/program_data/AKI_CDM_PY/MetaRegression/gamalltmp_double_interaction_noAUC_json.pkl')
+                file_source.append(file)
+        pd.DataFrame({'feature1':feature1, 'feature2':feature2, 'fitdata':fitdata, 'plotdata':plotdata, 'file_source':file_source} ).to_pickle('/home/hoyinchan/blue/program_data/AKI_CDM_PY/MetaRegression/gamalltmp_double_interaction_noAUC_json.pkl')
         
     def generate_single_table(self):
         tmp_tt = self.fit_table_df.merge(plotshapsi.fit_table_df, on=[0], how='inner')
@@ -819,7 +933,8 @@ class plotmeta:
 
         j=0
 
-        for i in range(len(xxf)):       
+        for i in range(len(xxf)): 
+            print(xxf)
             print(xxf[i])
     #        Columnwise               
     #        i1 = int(np.floor((i+j)/nrows))
@@ -842,7 +957,8 @@ class plotmeta:
             else:
                 ylimmin, ylimmax = self.plot_meta1(xxf[i], filter_sitem=['MCRI'], ax=ax[i2][i1], alpha=0.1, axis_label=False, margin=margin)
                 if rescale_y:
-                    ax[i2][i1].set_ylim([ylimmin*1.4, ylimmax*1.4])
+#                    ax[i2][i1].set_ylim([ylimmin*1.4, ylimmax*1.4])
+                    ax[i2][i1].set_ylim([-1, 1])                    
                 xlimmin, xlimmax = self.get_minmax(xxf[i])
                 print(xlimmin, xlimmax)
                 ax[i2][i1].set_xlim([xlimmin, xlimmax])
@@ -887,23 +1003,23 @@ class plotmeta:
                 plt.colorbar(im, ax=ax[i2,i1])
         fig.savefig(f"meta_double{suffix}.svg", bbox_inches ='tight')
 
-    def plot_fig3_cat(self, ext_obj, numrow, figsize=None, suffix='', font_ratio=1, external_select=None, mode='max_y', mode2='all'):
+    def plot_fig3_cat(self, ext_obj, numrow, figsize=None, suffix='', font_ratio=1, external_select=None, mode='max_y', mode2='all', rescale=None):
         # Define sizes for title, xd-label, and ticks
         title_size = 20*font_ratio  # Adjust size as needed
         xlabel_size = 20*font_ratio  # Adjust size as needed
         tick_size = 20*font_ratio  # Adjust size as needed
         legend_size = 20*font_ratio  # Adjust size as needed
-        
+
         if figsize is None:
             figsize = (20, 5*numrow//2)
-            
+
         cin2 = self.get_interaction_stat(ext_obj, mode=mode)            
 
         if external_select is not None:
             top10f = pd.DataFrame(external_select)
             top10f.columns = ['top10f']
             cin2 = cin2.merge(top10f, left_on=[-1], right_on=['top10f'], how='inner').drop('top10f',axis=1)
-        
+
         # cin2o = cin2.copy()
         # cin2 = cin2.drop(-1,axis=1)
         # # Rename columns: _x to _tmp, _y to _x, and _tmp to _y
@@ -916,151 +1032,170 @@ class plotmeta:
         # cin2 = pd.concat([cin2, cin2o])
         # cin2 = cin2[cin2['r.sq_diff']>0]
         # cin2 = cin2.sort_values('r.sq_diff',ascending=False).groupby(-1).first().reset_index()            
-            
+
         cin2 = cin2[[x in list(self.cattarget) for x in cin2['0_x']]]
-        
+
         xxx = self.get_cat_interaction_feature()
         xxx['0_x'] = xxx.index
         cin2 = cin2[[-1, '0_x', 'r.sq_spline_y']].merge(xxx, on=[-1, '0_x'])
         cin2['r.sq_diff'] = cin2['r.sq']-cin2['r.sq_spline_y']        
-        
+
         cin2 = cin2[cin2['r.sq_diff']>0]
         cin2 = cin2.sort_values('r.sq_diff', ascending=False)
         cin2 = cin2.groupby('0_x').head(numrow).reset_index()
         cin2 = cin2.sort_values(['0_x', 'r.sq_diff'], ascending=False).reset_index(drop=True)
 
-        fig, ax = plt.subplots(numrow//2, 4, figsize=figsize)        
-        midpoint = 0.505
-        # Add a line at the midpoint. This requires converting the midpoint to the figure's coordinate system.
-        line = Line2D([midpoint, midpoint], [0.1, 0.89], transform=fig.transFigure, color="grey", linestyle="--")
-        fig.add_artist(line)   
-        
+        if len(cin2['0_x'].unique()) == 2:
+            fig, ax = plt.subplots(numrow//2, 4, figsize=figsize)        
+            midpoint = 0.505
+            # Add a line at the midpoint. This requires converting the midpoint to the figure's coordinate system.
+            line = Line2D([midpoint, midpoint], [0.1, 0.89], transform=fig.transFigure, color="grey", linestyle="--")
+            fig.add_artist(line)   
+        else:
+            fig, ax = plt.subplots(numrow//2, 2, figsize=figsize)                
+
         for i in cin2.index:
             i1 = int(np.floor(i/(numrow//2)))
             i2 = int(i-np.floor(i/(numrow//2))*(numrow//2))   
             self.plot_meta2_cat(cin2.loc[i,-1], cin2.loc[i,'0_x'], ext_obj=ext_obj, ax=ax[i2][i1], verbose=False, legend_size=legend_size, mode2=mode2)      
 
            # Set x_label for each subplot with increased size
-            ax[i2][i1].set_xlabel(self.translator.custom_translate_omop_2022_2_fig2(cin2.loc[i, -1]), fontsize=xlabel_size)
+
+            if len(cin2['0_x'].unique()) == 2:        
+                ax[i2][i1].set_xlabel(self.translator.custom_translate_omop_2022_2_fig2(cin2.loc[i, -1]), fontsize=xlabel_size)
+            else:
+                ax[i2][i1].set_xlabel(self.translator.custom_translate_omop_2022_2_outtable(cin2.loc[i, -1]), fontsize=xlabel_size)
 
             # Set title for the first row subplots with increased size
             if i2 == 0:
-                ax[i2][i1].set_title(self.translator.custom_translate_omop_2022_2_fig2(cin2.loc[i, '0_x']), fontsize=title_size)
-
+                if len(cin2['0_x'].unique()) == 2:
+                    ax[i2][i1].set_title(self.translator.custom_translate_omop_2022_2_fig2(cin2.loc[i, '0_x']), fontsize=title_size)
+                else:
+                    ax[i2][i1].set_title(self.translator.custom_translate_omop_2022_2_outtable(cin2.loc[i, '0_x']), fontsize=title_size)
             # Increase tick size
             ax[i2][i1].tick_params(axis='both', which='major', labelsize=tick_size)
             # Remove legends from all subplots
             ax[i2][i1].legend().set_visible(False)
+
+            if rescale is not None:
+                ax[i2][i1].set_ylim(rescale[0], rescale[1])  # Set the y-axis range              
 
         # Only enable legend for the top right subplot
         ax[0][-1].legend().set_visible(True)            
         ax[0][-1].legend().get_title().set_fontsize(legend_size)            
         for text in ax[0][-1].legend().get_texts():
             text.set_fontsize(20)  # Increase legend fontsize
-        
+
         # Set a common y_label for all subplots
         fig.text(0.08, 0.5, 'SHAP', va='center', rotation='vertical', fontsize=xlabel_size)
 
         fig.savefig(f"meta_double_cat{suffix}.svg", bbox_inches ='tight')     
-        return fig,ax
-            
+        return fig,ax            
 
-    def plot_fig3_cont(self, ext_obj, numrow=24, figsize=None, outputname='Double', plottype='full', suffix='', min_r2=0, best_plot=False, external_select=None, ncol=4, contour=False, font_ratio=1, mode='max_y'):
+        def plot_fig3_cont(self, ext_obj, numrow=24, figsize=None, outputname='Double', plottype='full', suffix='', min_r2=0, best_plot=False, external_select=None, ncol=4, contour=False, font_ratio=1, mode='max_y', rescale=None):
 
-        cin2 = self.get_interaction_stat(ext_obj, mode=mode)
-        cin2 = cin2[~cin2['0_x'].str.contains('PX')]
-        cin2 = cin2[~cin2[-1].str.contains('PX')]
-        
-        if external_select is not None:
-            top10f = pd.DataFrame(external_select)
-            top10f.columns = ['top10f']
-            cin2 = cin2.merge(top10f, left_on=[-1], right_on=['top10f'], how='inner').drop('top10f',axis=1).merge(top10f, left_on=['0_x'], right_on=['top10f'], how='inner').drop('top10f',axis=1)
-        
-        #cin2['r.sq_diff'] = cin2['r.sq']-cin2['r.sq_max_y']
-        if best_plot:           
-            cin2 = cin2[cin2['r.sq_diff']>0]
-            cin2 = cin2.sort_values('r.sq_diff',ascending=False).groupby(-1).first().reset_index()
-        else:
-            cin2 = cin2[cin2['r.sq_diff']>min_r2]
+            cin2 = self.get_interaction_stat(ext_obj, mode=mode)
+            cin2 = cin2[~cin2['0_x'].str.contains('PX')]
+            cin2 = cin2[~cin2[-1].str.contains('PX')]
+
+            if external_select is not None:
+                top10f = pd.DataFrame(external_select)
+                top10f.columns = ['top10f']
+                cin2 = cin2.merge(top10f, left_on=[-1], right_on=['top10f'], how='inner').drop('top10f',axis=1).merge(top10f, left_on=['0_x'], right_on=['top10f'], how='inner').drop('top10f',axis=1)
+
+            #cin2['r.sq_diff'] = cin2['r.sq']-cin2['r.sq_max_y']
+            if best_plot:           
+                cin2 = cin2[cin2['r.sq_diff']>0]
+                cin2 = cin2.sort_values('r.sq_diff',ascending=False).groupby(-1).first().reset_index()
+            else:
+                cin2 = cin2[cin2['r.sq_diff']>min_r2]
+                cin2 = cin2.sort_values('r.sq_diff', ascending=False)
+
+            print(cin2.shape)
+
+            cin2 = cin2.groupby(-1).head(numrow).reset_index()
             cin2 = cin2.sort_values('r.sq_diff', ascending=False)
-            
-        print(cin2.shape)
-        
-        cin2 = cin2.groupby(-1).head(numrow).reset_index()
-             
-        cin3 = cin2
-#         cin3a = cin2.sort_values(['r.sq_diff'], ascending=False).groupby([-1]).head(1).reset_index(drop=True).sort_values(['r.sq_diff'], ascending=False)
-#         cin3b = cin2.sort_values(['r.sq_diff'], ascending=False).groupby(['0_x']).head(1).reset_index(drop=True).sort_values(['r.sq_diff'], ascending=False)
+            cin3 = cin2
+    #         cin3a = cin2.sort_values(['r.sq_diff'], ascending=False).groupby([-1]).head(1).reset_index(drop=True).sort_values(['r.sq_diff'], ascending=False)
+    #         cin3b = cin2.sort_values(['r.sq_diff'], ascending=False).groupby(['0_x']).head(1).reset_index(drop=True).sort_values(['r.sq_diff'], ascending=False)
 
-#         cin3b = cin3b.drop(-1,axis=1)
-#         # Rename columns: _x to _tmp, _y to _x, and _tmp to _y
-#         cin3b.columns = [col.replace('_x', '_tmp') for col in cin3b.columns]
-#         cin3b.columns = [col.replace('_y', '_x') for col in cin3b.columns]
-#         cin3b.columns = [col.replace('_tmp', '_y') for col in cin3b.columns]
-#         # Rename the -1 column to '0_x'
-#         cin3b[-1] = cin3b['0_y'].copy()
-        # cin3 = pd.concat([cin3a,cin3b]).sort_values(['r.sq_diff'], ascending=False).drop_duplicates().head(numrow).reset_index(drop=True)
-        # cin3 = cin3.sort_values('r.sq_diff',ascending=False).reset_index(drop=True)
+    #         cin3b = cin3b.drop(-1,axis=1)
+    #         # Rename columns: _x to _tmp, _y to _x, and _tmp to _y
+    #         cin3b.columns = [col.replace('_x', '_tmp') for col in cin3b.columns]
+    #         cin3b.columns = [col.replace('_y', '_x') for col in cin3b.columns]
+    #         cin3b.columns = [col.replace('_tmp', '_y') for col in cin3b.columns]
+    #         # Rename the -1 column to '0_x'
+    #         cin3b[-1] = cin3b['0_y'].copy()
+            # cin3 = pd.concat([cin3a,cin3b]).sort_values(['r.sq_diff'], ascending=False).drop_duplicates().head(numrow).reset_index(drop=True)
+            # cin3 = cin3.sort_values('r.sq_diff',ascending=False).reset_index(drop=True)
 
-        
-        # Create data table
-        cin3_table = cin3[[-1,'0_x','r.sq','r.sq_max_y','r.sq_diff']]
-        cin3_table.columns = ['Primary', 'Secondary', 'Multi r.sq', 'Uni r.sq', 'r.sq Diff']
-        
-        # Function to apply formatting only to float columns
-        def format_str(val):
-            return "{:.4f}".format(val) if isinstance(val, float) else self.translator.custom_translate_omop_2022_2_outtable(val)
 
-        cin3_table = cin3_table.style.format(format_str).set_table_styles([
-                                # Aligning all cells to the left
-                                {'selector': 'td', 'props': [('text-align', 'left')]},    
-                                {'selector': 'th', 'props': [('text-align', 'left')]},  # Aligning index to the left
+            # Create data table
+            cin3_table = cin3[[-1,'0_x','r.sq','r.sq_max_y','r.sq_diff']]
+            cin3_table.columns = ['Primary', 'Secondary', 'Multi r.sq', 'Uni r.sq', 'r.sq Diff']
 
-                                # Optional: Adding a border under the column headers for consistency
-                                {'selector': 'thead th', 'props': [('border-bottom', '1px solid black')]},
+            # Function to apply formatting only to float columns
+            def format_str(val):
+                return "{:.4f}".format(val) if isinstance(val, float) else self.translator.custom_translate_omop_2022_2_outtable(val)
 
-                                # Style for the caption
-                                {'selector': 'caption', 
-                                 'props': [('color', 'black'), 
-                                           ('background-color', 'yellow'), 
-                                           ('font-size', '16px'),
-                                           ('text-align', 'left'),
-                                           ('font-weight', 'bold')]}, 
-                                ])             
-        
-        
-        # Define sizes
-        xlabel_size = 14*font_ratio  # Adjust size as needed
-        ylabel_size = 20*font_ratio  # Adjust size as needed
+            cin3_table = cin3_table.style.format(format_str).set_table_styles([
+                                    # Aligning all cells to the left
+                                    {'selector': 'td', 'props': [('text-align', 'left')]},    
+                                    {'selector': 'th', 'props': [('text-align', 'left')]},  # Aligning index to the left
 
-        tick_size = 12*font_ratio  # Adjust size as needed
-        legend_fontsize = 10*font_ratio  # Adjust size as needed
+                                    # Optional: Adding a border under the column headers for consistency
+                                    {'selector': 'thead th', 'props': [('border-bottom', '1px solid black')]},
 
-        if figsize==None:
-            figsize=(28, 5 * numrow // ncol)
-        
-        fig, ax = plt.subplots(numrow // ncol, ncol, figsize=figsize)
-        legend_fontsize = 10*font_ratio
-        
-        
-        for i in cin3.index:
-            i1 = int(    np.floor(i / ncol)) 
-            i2 = int(i - np.floor(i / ncol)*ncol)
+                                    # Style for the caption
+                                    {'selector': 'caption', 
+                                     'props': [('color', 'black'), 
+                                               ('background-color', 'yellow'), 
+                                               ('font-size', '16px'),
+                                               ('text-align', 'left'),
+                                               ('font-weight', 'bold')]}, 
+                                    ])             
 
-            self.plot_meta2_cont(cin3.loc[i, -1], cin3.loc[i, '0_x'], ext_obj=ext_obj, ax=ax[i1][i2], verbose=False, plottype=plottype, contour=contour, ticksize=tick_size, fontsize=xlabel_size)
-            
-            # Set x_label and y_label for each subplot
-            ax[i1][i2].set_xlabel(self.translator.custom_translate_omop_2022_2_outtable(cin3.loc[i, -1]), fontsize=xlabel_size)
 
-            # Increase tick size
-            ax[i1][i2].tick_params(axis='both', which='major', labelsize=tick_size)
+            # Define sizes
+            xlabel_size = 14*font_ratio  # Adjust size as needed
+            ylabel_size = 20*font_ratio  # Adjust size as needed
 
-        # Set a common y_label for all subplots
-        fig.text(0.07, 0.5, 'SHAP', va='center', rotation='vertical', fontsize=ylabel_size)    
+            tick_size = 12*font_ratio  # Adjust size as needed
+            legend_fontsize = 10*font_ratio  # Adjust size as needed
 
-        fig.savefig(f"meta_double_cont{suffix}.svg", bbox_inches='tight')      
-        
-        return fig, ax
+            if figsize==None:
+                figsize=(28, fig_size * numrow // ncol)
+
+            fig, ax = plt.subplots(numrow // ncol, ncol, figsize=figsize)
+            legend_fontsize = 10*font_ratio
+
+
+            for i in range(cin3.shape[0]):
+                if i >= numrow:
+                    break
+
+                i1 = int(    np.floor(i / ncol)) 
+                i2 = int(i - np.floor(i / ncol)*ncol)
+
+                self.plot_meta2_cont(cin3.iloc[i][-1], cin3.iloc[i]['0_x'], ext_obj=ext_obj, ax=ax[i1][i2], verbose=False, plottype=plottype, contour=contour, ticksize=tick_size, fontsize=xlabel_size)
+
+                # Set x_label and y_label for each subplot
+                ax[i1][i2].set_xlabel(self.translator.custom_translate_omop_2022_2_outtable(cin3.iloc[i][-1]), fontsize=xlabel_size)
+
+                # Increase tick size
+                ax[i1][i2].tick_params(axis='both', which='major', labelsize=tick_size)
+
+                if rescale is not None and not contour:
+                    ax[i1][i2].set_ylim(rescale[0], rescale[1])  # Set the y-axis range           
+
+
+            # Set a common y_label for all subplots
+            fig.text(0.07, 0.5, 'SHAP', va='center', rotation='vertical', fontsize=ylabel_size)    
+
+            fig.savefig(f"meta_double_cont{suffix}.svg", bbox_inches='tight')      
+            fig.savefig(f"meta_double_cont{suffix}.png", dpi=600, bbox_inches='tight')      
+
+            return fig, ax
         
     def plot_r2_rank(self):
         pltable = self.gen_fit_character()[[0, 'r.sq_spline', 'slope_auc']]
@@ -1079,7 +1214,7 @@ class plotmeta:
         
         #plt.plot(pltable[0], pltable['r.sq_spline_AUC'], '-o',  label='AUC')
         #plt.plot(pltable[0], pltable['slope_auc'],       '-o',  label='AUC_slope')
-        plt.plot(pltable[0], pltable['r.sq_spline_noAUC'], '-o',  label='no_AUC_popweight')
+        plt.plot([s.replace("\n", " ") for s in pltable[0]], pltable['r.sq_spline_noAUC'], '-o',  label='no_AUC_popweight')
         
         #plt.plot(pltable[0], pltable['r.sq_spline_weightAUC'], '-+',  label='AUC_popweight')
         #plt.plot(pltable[0], pltable['slope_auc_popweight'], '-x',  label='AUC_slope_popweight')
@@ -1160,10 +1295,13 @@ class plotmeta:
         cin2 = pd.concat([cin2, cin2o])                                
         if mode == 'max_y':
             cin2['r.sq_diff'] = cin2['r.sq']-cin2['r.sq_max_y']
+            cin2['r.sq_diff_per'] = cin2['r.sq_diff']/cin2['r.sq_max_y']            
         elif mode == 'max_x':
             cin2['r.sq_diff'] = cin2['r.sq']-cin2['r.sq_max_x']               
+            cin2['r.sq_diff_per'] = cin2['r.sq_diff']/cin2['r.sq_max_x']            
         else:
             cin2['r.sq_diff'] = cin2['r.sq']-cin2['r.sq_max']       
+            cin2['r.sq_diff_per'] = cin2['r.sq_diff']/cin2['r.sq_max']            
         cin2 = cin2.drop_duplicates()
         return cin2
         
@@ -1552,6 +1690,17 @@ class plotmeta:
             dff.index = [self.translator.custom_translate_omop_2022_2_outtable(x) for x in dff.index]
             all_out[ff] = dff 
         return catf, all_out
+    
+    def gen_supp_table2_fit_cat(self, target_cat=None):
+        xxx = self.get_cat_interaction_feature()
+        
+        if target_cat is not None:
+            target_cat = 'PX:CH:36415'
+            xxx = xxx[xxx.index==target_cat]
+        xxx.index = xxx[-1]
+        xxx.columns = ['-1', 'intercept', 'interaction_intercept', 'r.sq']
+        return xxx.drop('-1',axis=1)
+        
     
 if __name__ == "__main__":
     plotshapsn = plotmeta(order='single', interaction = 'nointeraction')

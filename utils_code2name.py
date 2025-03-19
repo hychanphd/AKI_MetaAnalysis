@@ -272,9 +272,13 @@ class code2name:
             'PX:CH:J3490': 'Unclassified drugs (PX:CH:J3490)',
             'PX:CH:76770': 'Diagnostic Ultrasound Procedures (PX:CH:J3490)',
             'LAB::LG5903-2': 'Magnesium (LAB:LOINC:LG5903-2)',
-            'LAB::LG6426-3': 'Phosphate (LAB:LOINC:LG6426-3)'
+            'LAB::LG6426-3': 'Phosphate (LAB:LOINC:LG6426-3)',
+            'MED:ATC:C09AA': 'ACE inhibitors, plain (MED:ATC:C09AA)'
         }
         return extracted_data.get(label, label)
+    
+    def custom_translate_omop_2022_2_no_lonic(self, label):
+        return self.custom_translate_omop_2022_2(label).rsplit(" ", 1)[0]
  
     def custom_translate_omop_2022_2_fig2(self, label):
         label0 = label.split('(')[0]
